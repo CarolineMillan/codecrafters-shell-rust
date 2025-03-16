@@ -13,11 +13,13 @@ fn main() {
         stdin.read_line(&mut input).unwrap();
         let i = input.trim();
         if i == "exit 0" {break}
-        if i[0..3] == *"echo" {
-            let len = input.len();
-            let arg = input[4..len].trim();
-            println!("{}", arg)
+        match i[0..3].as_ref() {
+            "echo" => {
+                let len = input.len();
+                let arg = input[4..len].trim();
+                println!("{}", arg)
+            },
+            _ => println!("{}: command not found", input.trim())
         }
-        else {println!("{}: command not found", input.trim())}
     }
 }
