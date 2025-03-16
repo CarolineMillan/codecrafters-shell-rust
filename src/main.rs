@@ -11,10 +11,11 @@ fn main() {
         let stdin = io::stdin();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
-        if input.trim() == "exit 0" {break}
-        if input[0..3] == *"echo" {
+        let i = input.trim();
+        if i == "exit 0" {break}
+        if i[0..3] == *"echo" {
             let len = input.len();
-            let arg = &input[4..len];
+            let arg = input[4..len].trim();
             println!("{}", arg)
         }
         else {println!("{}: command not found", input.trim())}
