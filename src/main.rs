@@ -18,7 +18,7 @@ fn main() {
         let tail = command.collect::<Vec<&str>>().join(" ");
 
         match head.unwrap() {
-            "exit 0" => break,
+            "exit" => break,
             "echo" => println!("{}", tail),
             "type" => {
                 match tail.trim() {
