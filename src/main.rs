@@ -17,10 +17,10 @@ fn main() {
         let head = command.next();
         let tail = command.collect::<Vec<&str>>().join(" ");
 
-        match head {
-            Some("exit 0") => break,
-            Some("echo ") => println!("{}", tail),
-            Some("type ") => {
+        match head.unwrap() {
+            "exit 0" => break,
+            "echo " => println!("{}", tail),
+            "type " => {
                 match tail.trim() {
                     "exit 0" | "exit" | "echo" | "type" => println!("{} is a shell builtin", tail),
                     _ => println!("{}: not found", tail),
