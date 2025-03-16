@@ -11,14 +11,9 @@ fn main() {
         let stdin = io::stdin();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
-        let i = input.trim();
-        if i == "exit 0" {break}
-        match i[0..3].as_ref() {
-            "echo" => {
-                let len = input.len();
-                let arg = input[4..len].trim();
-                println!("{}", arg)
-            },
+        match input.trim() {
+            "exit 0" => break,
+            input if input.starts_with("echo ") => println!("{}", &input[5..]),
             _ => println!("{}: command not found", input.trim())
         }
     }
