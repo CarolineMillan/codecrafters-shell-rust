@@ -21,7 +21,7 @@ fn main() {
             Some("exit 0") => break,
             Some("echo ") => println!("{}", tail),
             Some("type ") => {
-                match tail.as_str() {
+                match tail.trim() {
                     "exit 0" | "exit" | "echo" | "type" => println!("{} is a shell builtin", tail),
                     _ => println!("{}: not found", tail),
                 }
