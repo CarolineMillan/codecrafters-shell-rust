@@ -11,9 +11,21 @@ fn main() {
         let stdin = io::stdin();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
-        match input.trim() {
-            "exit 0" => break,
-            input if input.starts_with("echo ") => println!("{}", &input[5..]),
+
+        let mut command = input.split_whitespace();
+
+        let head = command.next();
+        let tail = command.collect::<Vec<&str>>().join(" ");
+
+        match head {
+            Some("exit 0") => break,
+            Some("echo ") => println!("{}", tail),
+            Some("type ") => {
+                match tail.as_str() {
+                    "exit 0" | "exit" | "echo " | "type " => println!("{} is a shell builtin", tail),
+                    _ => println!("{}: not found", tail),
+                }
+            }
             _ => println!("{}: command not found", input.trim())
         }
     }
