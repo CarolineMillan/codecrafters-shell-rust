@@ -22,7 +22,7 @@ fn main() {
             Some("echo ") => println!("{}", tail),
             Some("type ") => {
                 match tail.as_str() {
-                    "exit 0" | "exit" | "echo " | "type " => println!("{} is a shell builtin", tail),
+                    "exit 0" | "exit" | "echo" | "type" => println!("{} is a shell builtin", tail),
                     _ => println!("{}: not found", tail),
                 }
             }
