@@ -51,7 +51,7 @@ fn parse(command: Command) {
         "exit" => exit(command.tail[0].parse().unwrap()),
         "echo" => println!("{}", command.tail.join(" ")),
         "type" => {
-            for arg in command.tail {
+            for arg in &command.tail {
                 if CMDS.contains(&arg) {
                     println!("{} is a shell builtin", arg);
                 } 
@@ -59,7 +59,7 @@ fn parse(command: Command) {
                     if let Some(path) = find_executable_in_path(arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
                     } else {
-                        println!("{} not found", arg);
+                        println!("{} not found", command.tail.join(" "));
                     }
                 }
             }
