@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{self, join_paths, split_paths}, io::{self, Write}, ops::Deref, path::PathBuf, process::Command, str::SplitWhitespace};
+use std::{env::{self, current_dir, join_paths, split_paths}, io::{self, Write}, ops::Deref, path::PathBuf, process::Command, str::SplitWhitespace};
 use std::process::exit;
 
 /*
@@ -27,7 +27,7 @@ pub struct MyCommand<'a> {
 }
 
 // valid commands
-const CMDS: [&str; 3] = ["exit", "echo", "type"];
+const CMDS: [&str; 4] = ["exit", "echo", "type", "pwd"];
 
 impl<'a> MyCommand<'a> {
     fn new(input: &'a str) -> Self {
@@ -62,17 +62,14 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
         }
-        // need another match for an executable file name
-        // that will execute the file and pass in the arguments provided
+        "pwd" => {
+            let curr_dir = current_dir().expect("Problem getting current directory").into_os_string();
+            println!("{:?}", curr_dir);
+        }
         _ => {
-            if let Some(path) = find_executable_in_path(my_command.head.clone().unwrap()) {
-                // split path to get the executable file name (it'll be last in the path)
+            if let Some(_path) = find_executable_in_path(my_command.head.clone().unwrap()) {
                 let output = Command::new(my_command.head.unwrap()).args(my_command.tail).output().expect("failed to execute file");
-                //println!("status: {}", output.status);
                 io::stdout().write_all(&output.stdout)?;
-                //io::stderr().write_all(&output.stderr)?;
-
-                //assert!(output.status.success());
             }
             else {
                 println!("{}: command not found", my_command.head.unwrap())
@@ -98,7 +95,7 @@ fn main() {
         let my_command = MyCommand::new(&input.trim());
 
         // parse the command
-        parse(my_command);
+        let _res = parse(my_command);
         
     }
 }
