@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{io::{self, Write}, ops::Deref, str::SplitWhitespace};
+use std::{env::{self, join_paths, split_paths}, io::{self, Write}, ops::Deref, path::PathBuf, str::SplitWhitespace};
 use std::process::exit;
 
 /*
@@ -54,10 +54,13 @@ fn parse(command: Command) {
             for arg in command.tail {
                 if CMDS.contains(&arg) {
                     println!("{} is a shell builtin", arg);
-                } else if let Some(path) = find_executable_in_path(arg) {
+                } 
+                else {
+                    if let Some(path) = find_executable_in_path(arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
-                } else {
-                    println!("{} not found", arg);
+                    } else {
+                        println!("{} not found", arg);
+                    }
                 }
             }
         }
@@ -84,6 +87,17 @@ fn main() {
         parse(my_command);
         
     }
+}
+
+fn get_path(args: Vec<&str>) -> Result<(), env::JoinPathsError> {
+    if let Some(path) = env::var_os("PATH") {
+        let mut paths = env::split_paths(&path).collect::<Vec<_>>();
+        paths.push(PathBuf::from("/home/xyz/bin"));
+        let new_path = env::join_paths(paths)?;
+        env::set_var("PATH", &new_path);
+    }
+
+    Ok(())
 }
 
 /*
