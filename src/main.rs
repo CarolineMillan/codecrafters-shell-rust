@@ -68,9 +68,9 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 let output = Command::new(path).args(my_command.tail).output().expect("failed to execute file");
                 println!("status: {}", output.status);
                 io::stdout().write_all(&output.stdout)?;
-                io::stderr().write_all(&output.stderr)?;
+                //io::stderr().write_all(&output.stderr)?;
 
-                assert!(output.status.success());
+                //assert!(output.status.success());
             }
             else {
                 println!("{}: command not found", my_command.head.unwrap())
