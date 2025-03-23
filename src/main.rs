@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{self, current_dir, join_paths, split_paths}, io::{self, Write}, ops::Deref, path::PathBuf, process::Command, str::SplitWhitespace};
+use std::{env::{self, current_dir, join_paths, set_current_dir, split_paths}, io::{self, Write}, ops::Deref, path::PathBuf, process::Command, str::SplitWhitespace};
 use std::process::exit;
 
 /*
@@ -27,7 +27,7 @@ pub struct MyCommand<'a> {
 }
 
 // valid commands
-const CMDS: [&str; 4] = ["exit", "echo", "type", "pwd"];
+const CMDS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
 
 impl<'a> MyCommand<'a> {
     fn new(input: &'a str) -> Self {
@@ -65,6 +65,9 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         "pwd" => {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
             println!("{}", curr_dir);
+        }
+        "cd" => {
+            set_current_dir(my_command.tail[0]).expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
         }
         _ => {
             if let Some(_path) = find_executable_in_path(my_command.head.clone().unwrap()) {
