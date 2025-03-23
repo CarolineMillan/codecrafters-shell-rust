@@ -67,8 +67,9 @@ fn parse(my_command: MyCommand) {
             if let Some(path) = find_executable_in_path(my_command.head.clone().unwrap()) {
                 let _output = Command::new(path).args(my_command.tail).output().expect("failed to execute file");
             }
-            println!("{}: command not found", my_command.head.unwrap())
-        
+            else {
+                println!("{}: command not found", my_command.head.unwrap())
+            }
         }
     }
 }
