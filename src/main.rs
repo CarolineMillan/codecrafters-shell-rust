@@ -64,7 +64,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "pwd" => {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string();
-            println!("{:?}", curr_dir);
+            println!("{:#?}", curr_dir);
         }
         _ => {
             if let Some(_path) = find_executable_in_path(my_command.head.clone().unwrap()) {
