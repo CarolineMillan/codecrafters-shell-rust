@@ -44,6 +44,7 @@ impl<'a> MyCommand<'a> {
 }
 
 fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
+    println!("{}", my_command.head.unwrap());
     match my_command.head.unwrap() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
