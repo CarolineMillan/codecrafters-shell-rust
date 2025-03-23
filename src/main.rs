@@ -43,7 +43,7 @@ impl<'a> MyCommand<'a> {
     }
 }
 
-fn parse(my_command: MyCommand) {
+fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     match my_command.head.unwrap() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
@@ -77,6 +77,7 @@ fn parse(my_command: MyCommand) {
             }
         }
     }
+    Ok(())
 }
 
 
