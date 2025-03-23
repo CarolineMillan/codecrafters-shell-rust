@@ -65,7 +65,7 @@ fn parse(command: Command) {
                 }
             }
         }
-        _ => println!("{}: command not found", command.tail.join(" "))
+        _ => println!("{}: command not found", command.head.unwrap())
     }
 }
 
