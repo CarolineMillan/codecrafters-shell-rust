@@ -65,7 +65,12 @@ fn parse(my_command: MyCommand) {
         // that will execute the file and pass in the arguments provided
         _ => {
             if let Some(path) = find_executable_in_path(my_command.head.clone().unwrap()) {
-                let _output = Command::new(path).args(my_command.tail).output().expect("failed to execute file");
+                let output = Command::new(path).args(my_command.tail).output().expect("failed to execute file");
+                println!("status: {}", output.status);
+                io::stdout().write_all(&output.stdout)?;
+                io::stderr().write_all(&output.stderr)?;
+
+                assert!(output.status.success());
             }
             else {
                 println!("{}: command not found", my_command.head.unwrap())
