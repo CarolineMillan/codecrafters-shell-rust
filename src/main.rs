@@ -68,7 +68,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => {
             if let Some(path) = find_executable_in_path(my_command.head.clone().unwrap()) {
-                set_current_dir(path).expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
+                set_current_dir(path).unwrap();//expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
             }
             else {
                 println!("cd: {}: No such file or directory", my_command.tail[0]);
