@@ -44,7 +44,7 @@ impl<'a> MyCommand<'a> {
 }
 
 fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", my_command.head.unwrap());
+    //println!("{}", my_command.head.unwrap());
     match my_command.head.unwrap() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
@@ -67,7 +67,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         _ => {
             if let Some(path) = find_executable_in_path(my_command.head.clone().unwrap()) {
                 let output = Command::new(path).args(my_command.tail).output().expect("failed to execute file");
-                println!("status: {}", output.status);
+                //println!("status: {}", output.status);
                 io::stdout().write_all(&output.stdout)?;
                 //io::stderr().write_all(&output.stderr)?;
 
