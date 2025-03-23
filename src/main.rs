@@ -56,6 +56,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 } 
                 else if let Some(path) = find_executable_in_path(arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
+                    // change
                 } 
                 else {
                     println!("{} not found", my_command.tail.join(" "));
