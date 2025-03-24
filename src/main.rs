@@ -159,12 +159,13 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
+            
             let out = Command::new("cat")
-                            .current_dir(current_dir().expect("Problem getting current directory").into_os_string())
                             .args(my_command.tail)
                             .output()
                             .expect("failed to execute process");
             io::stdout().write_all(&out.stdout).unwrap();
+        
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
