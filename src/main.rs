@@ -31,10 +31,10 @@ const CMDS: [&str; 6] = ["exit", "echo", "type", "pwd", "cd", "cat"];
 
 impl<'a> MyCommand<'a> {
     fn new(input: &'a str) -> Self {
-        let mut my_command = input.split_whitespace();
+        //let mut my_command = input.trim().split_whitespace();
 
-        let head = my_command.next();
-        let tail = my_command.collect::<Vec<&str>>();//.join(" ");
+        //let head = my_command.next();
+        let (head, tail) = parse_input(input).expect("Error parsing input");//.collect::<Vec<&str>>());//.join(" ");
 
         Self {
             head,
@@ -43,7 +43,7 @@ impl<'a> MyCommand<'a> {
     }
 }
 
-fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
+fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}", my_command.head.unwrap());
     match my_command.head.unwrap() {
         // exit w code 0
@@ -97,7 +97,7 @@ fn main() {
         let my_command = MyCommand::new(&input.trim());
 
         // parse the command
-        let _res = parse(my_command);
+        let _res = decode(my_command);
         
     }
 }
@@ -129,6 +129,7 @@ fn change_directory(dir: &str) {
 }
 
 fn echo(args: Vec<&str>) {
+    /*
     let mut my_args = Vec::<&str>::new();
     for arg in args.clone() {
         /*
@@ -144,8 +145,35 @@ fn echo(args: Vec<&str>) {
         //let my_arg: &str = temp.to_string().as_ref();
         my_args.push(my_arg);
     }
-    println!("{}", my_args.join(" "))
+    */
+    println!("{}", args.join(" "))
 }
+
+fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
+    let input = input.trim();
+    let (cmd, rest) = input.split_once(" ").unwrap_or((input, ""));
+    let mut result = vec![cmd];//.to_string()];
+    let mut rest = rest.trim();
+    while !rest.is_empty() {
+        match rest.chars().next().unwrap() {
+            '\'' => {
+                let (arg, r) = rest[1..].split_once('\'')?;
+                result.push(arg);//.to_string());
+                rest = r;
+            }
+            ' ' => {
+                rest = rest.trim_start();
+            }
+            _c => {
+                let (arg, r) = rest.split_once(' ').unwrap_or((rest, ""));
+                result.push(arg);//.to_string());
+                rest = r;
+            }
+        }
+    }
+    Some((Some(cmd), result))
+}
+
 /*
 
 fn main() {
