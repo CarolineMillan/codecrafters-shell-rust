@@ -27,7 +27,7 @@ pub struct MyCommand {
 }
 
 // valid commands
-const CMDS: [&str; 6] = ["exit", "echo", "type", "pwd", "cd", "cat"];
+const CMDS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
 
 impl MyCommand {
     fn new(input: &str) -> Self {
@@ -145,6 +145,7 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 if CMDS.contains(&arg.as_ref()) {
                     println!("{} is a shell builtin", arg);
                 } 
+                
                 else if let Some(path) = find_executable_in_path(&arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
                 } 
