@@ -144,7 +144,7 @@ fn echo(args: Vec<&str>) {
         //let my_arg: &str = temp.to_string().as_ref();
         my_args.push(my_arg);
     }
-    println!("{}", my_args.join(""))
+    println!("{}", my_args.join(" "))
 }
 /*
 
