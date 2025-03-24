@@ -67,6 +67,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             println!("{}", curr_dir);
         }
         "cd" => {
+            // change
 
             // get a handle on input path
             let path = Path::new(my_command.tail[0]).canonicalize();
