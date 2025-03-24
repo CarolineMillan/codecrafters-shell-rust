@@ -67,24 +67,16 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             println!("{}", curr_dir);
         }
         "cd" => {
-            //let path = find_executable_in_path(my_command.head.clone().unwrap()).unwrap();
-            
-            // if first char is a ., then we just want to append the arg to the current directory/path buffer
-            // if it's .. go back one dir
-            // if it's ./dir, then what?
 
             // get a handle on input path
-            let path = Path::new(my_command.tail[0]).canonicalize();//.expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
+            let path = Path::new(my_command.tail[0]).canonicalize();
             
             if path.is_err() {
                 println!("cd: {}: No such file or directory", my_command.tail[0]);
             }
             else {
                 let res = set_current_dir(path.unwrap());
-            
-                // deal with this after changes
-                //let res = set_current_dir(my_command.tail[0]);//.expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
-                
+        
                 if res.is_err() {
                     println!("cd: {}: No such file or directory", my_command.tail[0]);
                 }
