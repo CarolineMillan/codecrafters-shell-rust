@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{self, current_dir, join_paths, set_current_dir, split_paths}, io::{self, Write}, ops::Deref, path::PathBuf, process::Command, str::SplitWhitespace};
+use std::{env::{self, current_dir, join_paths, set_current_dir, split_paths}, io::{self, Write}, ops::Deref, path::{Path, PathBuf}, process::Command, str::SplitWhitespace};
 use std::process::exit;
 
 /*
@@ -56,7 +56,6 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 } 
                 else if let Some(path) = find_executable_in_path(arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
-                    // change
                 } 
                 else {
                     println!("{} not found", my_command.tail.join(" "));
@@ -69,7 +68,18 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => {
             //let path = find_executable_in_path(my_command.head.clone().unwrap()).unwrap();
-            let res = set_current_dir(my_command.tail[0]);//.expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
+            
+            // if first char is a ., then we just want to append the arg to the current directory/path buffer
+            // if it's .. go back one dir
+            // if it's ./dir, then what?
+
+            // get a handle on input path
+            let path = Path::new(my_command.tail[0]).canonicalize().expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
+            
+            // deal with this after changes
+            //let res = set_current_dir(my_command.tail[0]);//.expect(format!("cd: {}: No such file or directory", my_command.tail[0]).as_ref());
+            let res = set_current_dir(path);
+
             if res.is_err() {
                 println!("cd: {}: No such file or directory", my_command.tail[0]);
             }
