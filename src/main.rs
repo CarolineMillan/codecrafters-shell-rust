@@ -48,7 +48,7 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     match my_command.head.unwrap() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
-        "echo" => echo(my_command.tail),
+        "echo" => println!("{}", my_command.tail.join(" ")),
         "type" => {
             for arg in my_command.tail.clone().into_iter() {
                 if CMDS.contains(&arg) {
@@ -126,27 +126,6 @@ fn change_directory(dir: &str) {
             }
         }
     }
-}
-
-fn echo(args: Vec<&str>) {
-    /*
-    let mut my_args = Vec::<&str>::new();
-    for arg in args.clone() {
-        /*
-        let mut chars = arg.chars();
-        let mut my_arg = arg;
-        if (chars.nth(0) == chars.nth_back(0)) &&  (chars.nth(0) == Some('\'')) {
-            chars.next();
-            chars.next_back();
-            my_arg = chars.as_str();
-        }
-        */
-        let my_arg: &str = arg.trim_matches(|c| c == '\"' || c == '\'').as_ref();
-        //let my_arg: &str = temp.to_string().as_ref();
-        my_args.push(my_arg);
-    }
-    */
-    println!("{}", args.join(""))
 }
 
 fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
