@@ -141,7 +141,7 @@ fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Opti
                 rest = r;
             }
             ' ' => {
-                rest = rest.trim_start();
+                rest = rest.trim();//_start();
             }
             _c => {
                 let (arg, r) = rest.split_once(' ').unwrap_or((rest, ""));
@@ -149,7 +149,7 @@ fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Opti
                 rest = r;
             }
         }
-        rest = rest.trim();
+        //rest = rest.trim();
     }
     Some((Some(cmd), result))
 }
