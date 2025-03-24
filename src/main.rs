@@ -146,7 +146,7 @@ fn echo(args: Vec<&str>) {
         my_args.push(my_arg);
     }
     */
-    println!("{}", args.join(" "))
+    println!("{}", args.join(""))
 }
 
 fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
