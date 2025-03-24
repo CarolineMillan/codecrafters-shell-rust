@@ -67,7 +67,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
     let mut chars = input.chars().peekable();
 
     // loop through every character in the string -- this feels like a brute force method, is there a better way?
-    while let Some(&c) = chars.peek() {
+    while let Some(c) = chars.next() {
         match state {
             NoQuote => {
                 // If we see a whitespace and we're not inside quotes,
@@ -91,7 +91,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
                 // Toggle quoting state on encountering a single quote.
                 else if c == '\''{
                     // Consume the quote.
-                    chars.next();
+                    //chars.next();
                     // Toggle the flag.
                     state = Single;
                 }
