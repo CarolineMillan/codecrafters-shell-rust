@@ -98,6 +98,13 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
 }
 
 /* 
+fn process_echo_argument(argument: &str) -> String {
+    if is_surrounded_by_quotes(argument) {
+        remove_surrounding_quotes(argument)
+    } else {
+        argument.split_whitespace().collect::<Vec<&str>>().join(" ")
+    }
+}
 fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Option<&str>, Option<Vec<&str>>) {
     
     // get head
@@ -151,7 +158,14 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             println!("{}", curr_dir);
         }
         "cd" => change_directory(&my_command.tail[0]),
-        "cat" => {}
+        "cat" => {
+            let out = Command::new("cat")
+                            .current_dir(current_dir().expect("Problem getting current directory").into_os_string())
+                            .args(my_command.tail)
+                            .output()
+                            .expect("failed to execute process");
+            io::stdout().write_all(&out.stdout).unwrap();
+        },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
                 let output = Command::new(&my_head).args(my_command.tail).output().expect("failed to execute file");
