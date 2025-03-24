@@ -59,7 +59,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Opti
     }
 
     // Remove any inner quotes.
-    rest = rest.replace("\'", "");
+    //rest = rest.replace("\'", "");
 
     let result = rest
         .trim()
