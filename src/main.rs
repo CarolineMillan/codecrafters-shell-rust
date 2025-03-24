@@ -57,19 +57,19 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
     //let mut in_single_quotes = false;
     
     enum QuoteState {
-        None,
+        NoQuote,
         Single,
         Double,
     }
     use QuoteState::*;
     
-    let mut state = None;
+    let mut state = NoQuote;
     let mut chars = input.chars().peekable();
 
     // loop through every character in the string -- this feels like a brute force method, is there a better way?
     while let Some(&c) = chars.peek() {
         match state {
-            None => {
+            NoQuote => {
                 // If we see a whitespace and we're not inside quotes,
                 // then the current token (if not empty) is complete.
                 if c.is_whitespace() {
@@ -106,7 +106,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
             Single => {
                 if c == '\'' {
                     // End of single-quoted string.
-                    state = None;
+                    state = NoQuote;
                 } else {
                     // In single quotes, all characters are literal.
                     current.push(c);
@@ -115,7 +115,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
             Double => {
                 if c == '"' {
                     // End of double-quoted string.
-                    state = None;
+                    state = NoQuote;
                 } else if c == '\\' {
                     // In double quotes, backslash escapes specific characters.
                     if let Some(&next_char) = chars.peek() {
