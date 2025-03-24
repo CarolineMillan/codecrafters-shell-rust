@@ -53,38 +53,23 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Opti
     //let mut result = vec![];
     let mut rest = rest.trim().to_string();
 
+    // removed surrounding quotes, need to do this for all args
     if is_surrounded_by_quotes(&rest) {
         rest = remove_surrounding_quotes(&rest);
     }
+
+    // Remove any inner quotes.
+    rest = rest.replace("\'", "");
+
     let result = rest
         .trim()
         .split_whitespace()
         .map(String::from)
         .collect::<Vec<String>>();//.join(" ")
 
+    
     Some((Some(head.to_string()),result))
 }
-
-    /*
-    while !rest.is_empty() {
-        match rest.chars().next().unwrap() {
-            '\'' => {
-                let (arg, r) = rest[1..].split_once('\'')?;
-                result.push(arg);//.to_string());
-                rest = r;
-            }
-            ' ' => {
-                rest = rest.trim_start();
-            }
-            _c => {
-                let (arg, r) = rest.split_once(' ').unwrap_or((rest, ""));
-                result.push(arg);//.to_string());
-                rest = r;
-            }
-        }
-        //rest = rest.trim();
-    }
-    */
 
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}", my_command.head.unwrap());
