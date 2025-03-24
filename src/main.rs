@@ -131,6 +131,7 @@ fn change_directory(dir: &str) {
 fn echo(args: Vec<&str>) {
     let mut my_args = Vec::<&str>::new();
     for arg in args.clone() {
+        /*
         let mut chars = arg.chars();
         let mut my_arg = arg;
         if (chars.nth(0) == chars.nth_back(0)) &&  (chars.nth(0) == Some('\'')) {
@@ -138,6 +139,9 @@ fn echo(args: Vec<&str>) {
             chars.next_back();
             my_arg = chars.as_str();
         }
+        */
+        let my_arg: &str = arg.trim_matches(|c| c == '\"' || c == '\'').as_ref();
+        //let my_arg: &str = temp.to_string().as_ref();
         my_args.push(my_arg);
     }
     println!("{}", my_args.join(" "))
