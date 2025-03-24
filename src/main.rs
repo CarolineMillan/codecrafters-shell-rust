@@ -68,7 +68,8 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => {
             if my_command.tail[0] == "~" {
-                let res = set_current_dir(var("USERPROFILE").unwrap());
+                let path = var("USERPROFILE").expect("Error getting home directory");
+                let res = set_current_dir(path);
         
                 if res.is_err() {
                     println!("cd: {}: No such file or directory", my_command.tail[0]);
