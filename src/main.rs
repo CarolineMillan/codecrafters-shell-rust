@@ -152,7 +152,7 @@ fn echo(args: Vec<&str>) {
 fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
     let input = input.trim();
     let (cmd, rest) = input.split_once(" ").unwrap_or((input, ""));
-    let mut result = vec![cmd];//.to_string()];
+    let mut result = vec![];//cmd];//.to_string()];
     let mut rest = rest.trim();
     while !rest.is_empty() {
         match rest.chars().next().unwrap() {
