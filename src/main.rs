@@ -36,11 +36,40 @@ impl<'a> MyCommand<'a> {
         //let head = my_command.next();
         let (head, tail) = parse_input(input).expect("Error parsing input");//.collect::<Vec<&str>>());//.join(" ");
 
+
         Self {
             head,
             tail,
         }
     }
+}
+
+fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
+    
+    // get head
+    let input = input.trim();
+    let (head, rest) = input.split_once(" ").unwrap_or((input, ""));
+    let mut result = vec![];
+    let mut rest = rest.trim();
+    while !rest.is_empty() {
+        match rest.chars().next().unwrap() {
+            '\'' => {
+                let (arg, r) = rest[1..].split_once('\'')?;
+                result.push(arg);//.to_string());
+                rest = r;
+            }
+            ' ' => {
+                rest = rest.trim_start();
+            }
+            _c => {
+                let (arg, r) = rest.split_once(' ').unwrap_or((rest, ""));
+                result.push(arg);//.to_string());
+                rest = r;
+            }
+        }
+        //rest = rest.trim();
+    }
+    Some((Some(head),result))
 }
 
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
@@ -50,11 +79,12 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         "exit" => exit(my_command.tail[0].parse().unwrap()),
         "echo" => println!("{}", my_command.tail.join(" ")),
         "type" => {
+            //let arg = my_command.tail.clone().into_iter().map(|x| x.as_str());
             for arg in my_command.tail.clone().into_iter() {
-                if CMDS.contains(&arg) {
+                if CMDS.contains(&arg.as_ref()) {
                     println!("{} is a shell builtin", arg);
                 } 
-                else if let Some(path) = find_executable_in_path(arg) {
+                else if let Some(path) = find_executable_in_path(&arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
                 } 
                 else {
@@ -66,7 +96,7 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
             println!("{}", curr_dir);
         }
-        "cd" => change_directory(my_command.tail[0]),
+        "cd" => change_directory(&my_command.tail[0]),
         "cat" => {}
         _ => {
             if let Some(_path) = find_executable_in_path(my_command.head.clone().unwrap()) {
@@ -128,31 +158,6 @@ fn change_directory(dir: &str) {
     }
 }
 
-fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
-    let input = input.trim();
-    let (cmd, rest) = input.split_once(" ").unwrap_or((input, ""));
-    let mut result = vec![];//cmd];//.to_string()];
-    let mut rest = rest.trim();
-    while !rest.is_empty() {
-        match rest.chars().next().unwrap() {
-            '\'' => {
-                let (arg, r) = rest[1..].split_once('\'')?;
-                result.push(arg);//.to_string());
-                rest = r;
-            }
-            ' ' => {
-                rest = rest.trim();//_start();
-            }
-            _c => {
-                let (arg, r) = rest.split_once(' ').unwrap_or((rest, ""));
-                result.push(arg);//.to_string());
-                rest = r;
-            }
-        }
-        //rest = rest.trim();
-    }
-    Some((Some(cmd), result))
-}
 
 /*
 
