@@ -129,6 +129,14 @@ fn change_directory(dir: &str) {
 }
 
 fn echo(args: Vec<&str>) {
+    for mut arg in args.clone() {
+        let mut chars = arg.chars();
+        if (chars.nth(0) == chars.nth_back(0)) &&  (chars.nth(0) == Some('\'')) {
+            chars.next();
+            chars.next_back();
+            arg = chars.as_str();
+        }
+    }
     println!("{}", args.join(" "))
 }
 /*
