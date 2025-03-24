@@ -27,7 +27,7 @@ pub struct MyCommand<'a> {
 }
 
 // valid commands
-const CMDS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
+const CMDS: [&str; 6] = ["exit", "echo", "type", "pwd", "cd", "cat"];
 
 impl<'a> MyCommand<'a> {
     fn new(input: &'a str) -> Self {
@@ -48,7 +48,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     match my_command.head.unwrap() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
-        "echo" => println!("{}", my_command.tail.join(" ")),
+        "echo" => echo(my_command.tail),
         "type" => {
             for arg in my_command.tail.clone().into_iter() {
                 if CMDS.contains(&arg) {
@@ -66,31 +66,8 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
             println!("{}", curr_dir);
         }
-        "cd" => {
-            if my_command.tail[0] == "~" {
-                let path = var("HOME").expect("Error getting home directory");
-                let res = set_current_dir(path);
-        
-                if res.is_err() {
-                    println!("cd: {}: No such file or directory", my_command.tail[0]);
-                }
-            }
-            else {
-                // get a handle on input path
-                let path = Path::new(my_command.tail[0]).canonicalize();
-                
-                if path.is_err() {
-                    println!("cd: {}: No such file or directory", my_command.tail[0]);
-                }
-                else {
-                    let res = set_current_dir(path.unwrap());
-            
-                    if res.is_err() {
-                        println!("cd: {}: No such file or directory", my_command.tail[0]);
-                    }
-                }
-            }
-        }
+        "cd" => change_directory(my_command.tail[0]),
+        "cat" => {}
         _ => {
             if let Some(_path) = find_executable_in_path(my_command.head.clone().unwrap()) {
                 let output = Command::new(my_command.head.unwrap()).args(my_command.tail).output().expect("failed to execute file");
@@ -125,6 +102,35 @@ fn main() {
     }
 }
 
+fn change_directory(dir: &str) {
+    if dir == "~" {
+        let path = var("HOME").expect("Error getting home directory");
+        let res = set_current_dir(path);
+
+        if res.is_err() {
+            println!("cd: {}: No such file or directory", dir);
+        }
+    }
+    else {
+        // get a handle on input path
+        let path = Path::new(dir).canonicalize();
+        
+        if path.is_err() {
+            println!("cd: {}: No such file or directory", dir);
+        }
+        else {
+            let res = set_current_dir(path.unwrap());
+    
+            if res.is_err() {
+                println!("cd: {}: No such file or directory", dir);
+            }
+        }
+    }
+}
+
+fn echo(args: Vec<&str>) {
+    println!("{}", args.join(" "))
+}
 /*
 
 fn main() {
