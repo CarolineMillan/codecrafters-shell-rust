@@ -170,6 +170,7 @@ fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Opti
                 rest = r;
             }
         }
+        rest = rest.trim();
     }
     Some((Some(cmd), result))
 }
