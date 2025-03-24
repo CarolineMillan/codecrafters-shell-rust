@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{self, current_dir, join_paths, set_current_dir, split_paths, var}, io::{self, Write}, ops::Deref, path::{Path, PathBuf}, process::Command, str::SplitWhitespace};
+use std::{env::{current_dir, set_current_dir, var}, io::{self, Write}, path::Path, process::Command};
 use std::process::exit;
 
 /*
@@ -20,17 +20,17 @@ and execute methods (called in parse match statement)
 the main func will be a fde loop basically
 */
 
-pub struct MyCommand<'a> {
+pub struct MyCommand {
     // head is the command and tail is the arguments (maybe rename the fields..)
-    head: Option<&'a str>,
-    tail: Vec<&'a str>,
+    head: Option<String>,
+    tail: Vec<String>,
 }
 
 // valid commands
 const CMDS: [&str; 6] = ["exit", "echo", "type", "pwd", "cd", "cat"];
 
-impl<'a> MyCommand<'a> {
-    fn new(input: &'a str) -> Self {
+impl MyCommand {
+    fn new(input: &str) -> Self {
         //let mut my_command = input.trim().split_whitespace();
 
         //let head = my_command.next();
@@ -44,13 +44,28 @@ impl<'a> MyCommand<'a> {
     }
 }
 
-fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Option<&str>, Option<Vec<&str>>) {
+fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Option<&str>, Option<Vec<&str>>) {
     
     // get head
     let input = input.trim();
     let (head, rest) = input.split_once(" ").unwrap_or((input, ""));
-    let mut result = vec![];
-    let mut rest = rest.trim();
+    
+    //let mut result = vec![];
+    let mut rest = rest.trim().to_string();
+
+    if is_surrounded_by_quotes(&rest) {
+        rest = remove_surrounding_quotes(&rest);
+    }
+    let result = rest
+        .trim()
+        .split_whitespace()
+        .map(String::from)
+        .collect::<Vec<String>>();//.join(" ")
+
+    Some((Some(head.to_string()),result))
+}
+
+    /*
     while !rest.is_empty() {
         match rest.chars().next().unwrap() {
             '\'' => {
@@ -69,12 +84,12 @@ fn parse_input<'a>(input: &str) -> Option<(Option<&str>, Vec<&str>)> { //} (Opti
         }
         //rest = rest.trim();
     }
-    Some((Some(head),result))
-}
+    */
 
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}", my_command.head.unwrap());
-    match my_command.head.unwrap() {
+    let my_head = my_command.head.unwrap();
+    match my_head.as_ref() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
         "echo" => println!("{}", my_command.tail.join(" ")),
@@ -99,12 +114,12 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {}
         _ => {
-            if let Some(_path) = find_executable_in_path(my_command.head.clone().unwrap()) {
-                let output = Command::new(my_command.head.unwrap()).args(my_command.tail).output().expect("failed to execute file");
+            if let Some(_path) = find_executable_in_path::<String>(&my_head) {
+                let output = Command::new(&my_head).args(my_command.tail).output().expect("failed to execute file");
                 io::stdout().write_all(&output.stdout)?;
             }
             else {
-                println!("{}: command not found", my_command.head.unwrap())
+                println!("{}: command not found", &my_head)
             }
         }
     }
@@ -156,6 +171,16 @@ fn change_directory(dir: &str) {
             }
         }
     }
+}
+
+pub fn remove_surrounding_quotes(argument: &str) -> String {
+    argument.trim_matches(|c| c == '"' || c == '\'').to_string()
+}
+
+pub fn is_surrounded_by_quotes(argument: &str) -> bool {
+    matches!(argument.chars().next(), Some('\'')) && matches!(argument.chars().last(), Some('\''))
+        || matches!(argument.chars().next(), Some('\"'))
+            && matches!(argument.chars().last(), Some('\"'))
 }
 
 
