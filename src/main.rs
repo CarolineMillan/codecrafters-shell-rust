@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{self, current_dir, join_paths, set_current_dir, split_paths}, io::{self, Write}, ops::Deref, path::{Path, PathBuf}, process::Command, str::SplitWhitespace};
+use std::{env::{self, current_dir, join_paths, set_current_dir, split_paths, var}, io::{self, Write}, ops::Deref, path::{Path, PathBuf}, process::Command, str::SplitWhitespace};
 use std::process::exit;
 
 /*
@@ -67,19 +67,26 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             println!("{}", curr_dir);
         }
         "cd" => {
-            // change
-
-            // get a handle on input path
-            let path = Path::new(my_command.tail[0]).canonicalize();
-            
-            if path.is_err() {
-                println!("cd: {}: No such file or directory", my_command.tail[0]);
-            }
-            else {
-                let res = set_current_dir(path.unwrap());
+            if my_command.tail[0] == "~" {
+                let res = set_current_dir(var("USERPROFILE").unwrap());
         
                 if res.is_err() {
                     println!("cd: {}: No such file or directory", my_command.tail[0]);
+                }
+            }
+            else {
+                // get a handle on input path
+                let path = Path::new(my_command.tail[0]).canonicalize();
+                
+                if path.is_err() {
+                    println!("cd: {}: No such file or directory", my_command.tail[0]);
+                }
+                else {
+                    let res = set_current_dir(path.unwrap());
+            
+                    if res.is_err() {
+                        println!("cd: {}: No such file or directory", my_command.tail[0]);
+                    }
                 }
             }
         }
