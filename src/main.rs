@@ -43,7 +43,61 @@ impl MyCommand {
         }
     }
 }
+fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
+    let input = input.trim();
+    let mut tokens = Vec::new();
+    let mut current = String::new();
+    let mut in_quotes = false;
+    let mut chars = input.chars().peekable();
 
+    while let Some(&c) = chars.peek() {
+        match c {
+            // If we see a whitespace and we're not inside quotes,
+            // then the current token (if not empty) is complete.
+            ch if ch.is_whitespace() && !in_quotes => {
+                if !current.is_empty() {
+                    tokens.push(current.clone());
+                    current.clear();
+                }
+                // Consume all whitespace.
+                while let Some(&ws) = chars.peek() {
+                    if ws.is_whitespace() {
+                        chars.next();
+                    } else {
+                        break;
+                    }
+                }
+            }
+            // Toggle quoting state on encountering a single quote.
+            '\'' => {
+                // Consume the quote.
+                chars.next();
+                // Toggle the flag.
+                in_quotes = !in_quotes;
+            }
+            // Any other character is added to the current token.
+            _ => {
+                current.push(c);
+                chars.next();
+            }
+        }
+    }
+    // Push any token left in current.
+    if !current.is_empty() {
+        tokens.push(current);
+    }
+
+    // If no tokens were collected, return None.
+    if tokens.is_empty() {
+        return None;
+    }
+
+    // Use the first token as the head and the remaining as the arguments.
+    let head = tokens.remove(0);
+    Some((Some(head), tokens))
+}
+
+/* 
 fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Option<&str>, Option<Vec<&str>>) {
     
     // get head
@@ -70,7 +124,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Opti
     
     Some((Some(head.to_string()),result))
 }
-
+*/
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}", my_command.head.unwrap());
     let my_head = my_command.head.unwrap();
