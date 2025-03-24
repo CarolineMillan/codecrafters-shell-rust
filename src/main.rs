@@ -63,6 +63,8 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
     }
     use QuoteState::*;
     
+    let mut backslash_state = 0;
+    let mut counter = 0;
     let mut state = NoQuote;
     let mut chars = input.chars().peekable();
 
@@ -98,6 +100,11 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
                 else if c == '"' {
                     state = Double;
                 }
+                else if c == '\\' {
+                    // need another state, that only stays valid for one char (iteration of the loop)
+                    // first thought is to add a counter, save the counter to the state, and then compare the state to the current counter when you come across something that should be escaped
+                    backslash_state = counter;
+                }
                 // Any other character is added to the current token.
                 else {
                     current.push(c);
@@ -127,8 +134,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
                             // Backslash remains if it doesn't escape one of the above.
                             current.push(c);
                         }
-                    } else {
-                        //change
+                    } else { 
                         current.push(c);
                     }
                 } else {
@@ -136,6 +142,7 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
                 }
             }
         }
+        counter += 1;
     }
     // Push any token left in current.
     if !current.is_empty() {
