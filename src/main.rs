@@ -104,6 +104,19 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
                     // need another state, that only stays valid for one char (iteration of the loop)
                     // first thought is to add a counter, save the counter to the state, and then compare the state to the current counter when you come across something that should be escaped
                     backslash_state = counter;
+                    // OR it means we keep the next char and drop the backslash
+                    if let Some(&next_char) = chars.peek() {
+                        if next_char == '\\' || next_char == '$' || next_char == '"' || next_char == '\n' {
+                            // Consume the escaped character.
+                            current.push(next_char);
+                            chars.next();
+                        } else {
+                            // Backslash remains if it doesn't escape one of the above.
+                            current.push(c);
+                        }
+                    } else { 
+                        current.push(c);
+                    }
                 }
                 // Any other character is added to the current token.
                 else {
