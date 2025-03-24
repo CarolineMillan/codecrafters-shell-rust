@@ -43,42 +43,96 @@ impl MyCommand {
         }
     }
 }
+
+// this was from chatgpt and it seems to work, make sure you understand it
 fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
     let input = input.trim();
+    if input.is_empty() {
+        return None;
+    }
+
     let mut tokens = Vec::new();
     let mut current = String::new();
-    let mut in_quotes = false;
+
+    //let mut in_single_quotes = false;
+    
+    enum QuoteState {
+        None,
+        Single,
+        Double,
+    }
+    use QuoteState::*;
+    
+    let mut state = None;
     let mut chars = input.chars().peekable();
 
+    // loop through every character in the string -- this feels like a brute force method, is there a better way?
     while let Some(&c) = chars.peek() {
-        match c {
-            // If we see a whitespace and we're not inside quotes,
-            // then the current token (if not empty) is complete.
-            ch if ch.is_whitespace() && !in_quotes => {
-                if !current.is_empty() {
-                    tokens.push(current.clone());
-                    current.clear();
-                }
-                // Consume all whitespace.
-                while let Some(&ws) = chars.peek() {
-                    if ws.is_whitespace() {
-                        chars.next();
-                    } else {
-                        break;
+        match state {
+            None => {
+                // If we see a whitespace and we're not inside quotes,
+                // then the current token (if not empty) is complete.
+                if c.is_whitespace() {
+                    if !current.is_empty() {
+                        tokens.push(current.clone());
+                        current.clear();
                     }
+                    // Consume all whitespace.
+                    /*
+                    while let Some(&ws) = chars.peek() {
+                        if ws.is_whitespace() {
+                            chars.next();
+                        } else {
+                            break;
+                        }
+                    }
+                    */
+                }
+                // Toggle quoting state on encountering a single quote.
+                else if c == '\''{
+                    // Consume the quote.
+                    chars.next();
+                    // Toggle the flag.
+                    state = Single;
+                }
+                else if c == '"' {
+                    state = Double;
+                }
+                // Any other character is added to the current token.
+                else {
+                    current.push(c);
                 }
             }
-            // Toggle quoting state on encountering a single quote.
-            '\'' => {
-                // Consume the quote.
-                chars.next();
-                // Toggle the flag.
-                in_quotes = !in_quotes;
+            Single => {
+                if c == '\'' {
+                    // End of single-quoted string.
+                    state = None;
+                } else {
+                    // In single quotes, all characters are literal.
+                    current.push(c);
+                }
             }
-            // Any other character is added to the current token.
-            _ => {
-                current.push(c);
-                chars.next();
+            Double => {
+                if c == '"' {
+                    // End of double-quoted string.
+                    state = None;
+                } else if c == '\\' {
+                    // In double quotes, backslash escapes specific characters.
+                    if let Some(&next_char) = chars.peek() {
+                        if next_char == '\\' || next_char == '$' || next_char == '"' || next_char == '\n' {
+                            // Consume the escaped character.
+                            current.push(next_char);
+                            chars.next();
+                        } else {
+                            // Backslash remains if it doesn't escape one of the above.
+                            current.push(c);
+                        }
+                    } else {
+                        current.push(c);
+                    }
+                } else {
+                    current.push(c);
+                }
             }
         }
     }
@@ -97,41 +151,6 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
     Some((Some(head), tokens))
 }
 
-/* 
-fn process_echo_argument(argument: &str) -> String {
-    if is_surrounded_by_quotes(argument) {
-        remove_surrounding_quotes(argument)
-    } else {
-        argument.split_whitespace().collect::<Vec<&str>>().join(" ")
-    }
-}
-fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Option<&str>, Option<Vec<&str>>) {
-    
-    // get head
-    let input = input.trim();
-    let (head, rest) = input.split_once(" ").unwrap_or((input, ""));
-    
-    //let mut result = vec![];
-    let mut rest = rest.trim().to_string();
-
-    // removed surrounding quotes, need to do this for all args
-    if is_surrounded_by_quotes(&rest) {
-        rest = remove_surrounding_quotes(&rest);
-    }
-
-    // Remove any inner quotes.
-    //rest = rest.replace("\'", "");
-
-    let result = rest
-        .trim()
-        .split_whitespace()
-        .map(String::from)
-        .collect::<Vec<String>>();//.join(" ")
-
-    
-    Some((Some(head.to_string()),result))
-}
-*/
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     //println!("{}", my_command.head.unwrap());
     let my_head = my_command.head.unwrap();
@@ -145,7 +164,6 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 if CMDS.contains(&arg.as_ref()) {
                     println!("{} is a shell builtin", arg);
                 } 
-                
                 else if let Some(path) = find_executable_in_path(&arg) {
                     println!("{} is {}", arg, path.to_str().unwrap());
                 } 
@@ -170,7 +188,10 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
-                let output = Command::new(&my_head).args(my_command.tail).output().expect("failed to execute file");
+                let output = Command::new(&my_head)
+                                    .args(my_command.tail)
+                                    .output()
+                                    .expect("failed to execute file");
                 io::stdout().write_all(&output.stdout)?;
             }
             else {
@@ -239,57 +260,38 @@ pub fn is_surrounded_by_quotes(argument: &str) -> bool {
 }
 
 
-/*
-
-fn main() {
-    // Uncomment this block to pass the first stage
-    loop {
-        print!("$ ");
-        io::stdout().flush().unwrap();
-
-        // Wait for user input
-        let stdin = io::stdin();
-        let mut input = String::new();
-        stdin.read_line(&mut input).unwrap();
-        /*
-
-        let mut command = input.split_whitespace();
-
-        // I'm not sure about using this, purely because of exit 0 
-        // I'm not sure if the 0 is necessary 
-        let head = command.next();
-        let tail = command.collect::<Vec<&str>>().join(" ");
-*/
-        match head.unwrap() {
-            "exit" => break,
-            "exit 0" => break,
-            "echo" => println!("{}", tail),
-            "type" => {
-                match tail.trim() {
-                    "exit" | "exit 0" | "echo" | "type" => println!("{} is a shell builtin", tail),
-                    //search for tail in path and print path, else print invalid command
-                    _ => {
-                        // if valid path
-                        // i don't know how to test for a valid path
-                        /// what's the structure?
-                        /// oh no
-                        /// is this some kind of search algorithm
-                        /// i think it is
-                        /// i don't want to learn those yet!
-                        /// use .split_paths
-                        /// 
-                        if let Some(path) = find_executable_in_path(arg) {
-                            println!("{} is {}", arg, path.to_str().unwrap());
-                        }
-                        else {
-                        // else
-                        println!("{}: not found", tail)
-                        }
-                    },
-                }
-            }
-            _ => println!("{}: command not found", input.trim())
-        }
+/* 
+fn process_echo_argument(argument: &str) -> String {
+    if is_surrounded_by_quotes(argument) {
+        remove_surrounding_quotes(argument)
+    } else {
+        argument.split_whitespace().collect::<Vec<&str>>().join(" ")
     }
+}
+fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> { //} (Option<&str>, Option<Vec<&str>>) {
+    
+    // get head
+    let input = input.trim();
+    let (head, rest) = input.split_once(" ").unwrap_or((input, ""));
+    
+    //let mut result = vec![];
+    let mut rest = rest.trim().to_string();
+
+    // removed surrounding quotes, need to do this for all args
+    if is_surrounded_by_quotes(&rest) {
+        rest = remove_surrounding_quotes(&rest);
+    }
+
+    // Remove any inner quotes.
+    //rest = rest.replace("\'", "");
+
+    let result = rest
+        .trim()
+        .split_whitespace()
+        .map(String::from)
+        .collect::<Vec<String>>();//.join(" ")
+
+    
+    Some((Some(head.to_string()),result))
 }
 */
