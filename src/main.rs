@@ -68,7 +68,7 @@ fn parse(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => {
             if my_command.tail[0] == "~" {
-                let path = var("USERPROFILE").expect("Error getting home directory");
+                let path = var("HOME").expect("Error getting home directory");
                 let res = set_current_dir(path);
         
                 if res.is_err() {
