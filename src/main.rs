@@ -262,7 +262,7 @@ fn main() {
         //print!("$ ");
         let mut output = io::stdout();//.flush().unwrap();
 
-        let message = "$";
+        let message = "$ ";
 
         write!(output, "{}", message).unwrap();
         output.flush().unwrap();
