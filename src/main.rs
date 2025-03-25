@@ -238,10 +238,11 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
                 let output = Command::new(&my_head)
-                                    .args(my_command.tail)
+                                    .args(&my_command.tail)
                                     .output()
                                     .expect("failed to execute file");
-                io::stdout().write_all(&output.stdout)?;
+                                let output_str = std::str::from_utf8(&output.stdout)?;
+                                output_string(&my_command.tail, output_str, &my_command.output_location)?;
             }
             else {
                 let output = format!("{}: command not found", &my_head);
