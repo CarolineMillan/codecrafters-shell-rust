@@ -260,12 +260,14 @@ fn main() {
     loop {
         //print_prompt().expect("couldn't print $");
         //print!("$ ");
-        let mut output = io::stdout();//.flush().unwrap();
+
+        //output
+        let mut stdout_file: Box<dyn Write> = Box::new(io::stdout());
 
         let message = "$ ";
 
-        write!(output, "{}", message).unwrap();
-        output.flush().unwrap();
+        write!(stdout_file, "{}", message).unwrap();
+        stdout_file.flush().unwrap();
         
 
         // Wait for user input
