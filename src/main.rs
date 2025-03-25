@@ -337,11 +337,11 @@ pub fn output_string(tail: &Vec<String>, output: &str, output_location: &OutputL
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
-            write!(file, "{}", output)?;
+            writeln!(file, "{}", output)?;
         }
         OutputLocation::AppendToFile(file_path) => {
             let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
-            write!(file, "{}", output)?;
+            writeln!(file, "{}", output)?;
         }
     }
     Ok(())
