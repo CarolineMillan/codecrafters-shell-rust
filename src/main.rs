@@ -165,24 +165,32 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
     match my_head.as_ref() {
         // exit w code 0
         "exit" => exit(my_command.tail[0].parse().unwrap()),
-        "echo" => println!("{}", my_command.tail.join(" ")),
+        "echo" => {
+            let output = format!("{}", my_command.tail.join(" "));
+            output_string(&my_command.tail, &output);
+        }
         "type" => {
             //let arg = my_command.tail.clone().into_iter().map(|x| x.as_str());
             for arg in my_command.tail.clone().into_iter() {
                 if CMDS.contains(&arg.as_ref()) {
-                    println!("{} is a shell builtin", arg);
+                    let output = format!("{} is a shell builtin", arg);
+                    output_string(&my_command.tail, &output);
                 } 
                 else if let Some(path) = find_executable_in_path(&arg) {
-                    println!("{} is {}", arg, path.to_str().unwrap());
+                    let output = format!("{} is {}", arg, path.to_str().unwrap());
+                    output_string(&my_command.tail, &output);
                 } 
                 else {
-                    println!("{} not found", my_command.tail.join(" "));
+                    let output = format!("{} not found", my_command.tail.join(" "));
+                    output_string(&my_command.tail, &output);
                 }
             }
         }
         "pwd" => {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
-            println!("{}", curr_dir);
+            let output = format!("{}", curr_dir);
+            output_string(&my_command.tail, &output);
+            //println!("{}", curr_dir);
         }
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
@@ -203,7 +211,9 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 io::stdout().write_all(&output.stdout)?;
             }
             else {
-                println!("{}: command not found", &my_head)
+                let output = format!("{}: command not found", &my_head);
+                output_string(&my_command.tail, &output);
+                //println!("{}: command not found", &my_head)
             }
         }
     }
@@ -237,7 +247,8 @@ fn change_directory(dir: &str) {
         let res = set_current_dir(path);
 
         if res.is_err() {
-            println!("cd: {}: No such file or directory", dir);
+            let output = format!("cd: {}: No such file or directory", dir);
+            output_string(&my_command.tail, &output);
         }
     }
     else {
@@ -245,13 +256,15 @@ fn change_directory(dir: &str) {
         let path = Path::new(dir).canonicalize();
         
         if path.is_err() {
-            println!("cd: {}: No such file or directory", dir);
+            let output = format!("cd: {}: No such file or directory", dir);
+            output_string(&my_command.tail, &output);
         }
         else {
             let res = set_current_dir(path.unwrap());
     
             if res.is_err() {
-                println!("cd: {}: No such file or directory", dir);
+                let output = format!("cd: {}: No such file or directory", dir);
+                output_string(&my_command.tail, &output);
             }
         }
     }
