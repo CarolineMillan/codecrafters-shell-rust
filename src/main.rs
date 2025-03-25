@@ -25,6 +25,14 @@ pub struct MyCommand {
     // head is the command and tail is the arguments (maybe rename the fields..)
     head: Option<String>,
     tail: Vec<String>,
+    output_location: OutputLocation,
+}
+
+#[derive(Debug)]
+pub enum OutputLocation {
+    Console,
+    File(String),  // File path for output redirection
+    AppendToFile(String),  // Append to file for '>>'
 }
 
 // valid commands
@@ -35,18 +43,19 @@ impl MyCommand {
         //let mut my_command = input.trim().split_whitespace();
 
         //let head = my_command.next();
-        let (head, tail) = parse_input(input).expect("Error parsing input");//.collect::<Vec<&str>>());//.join(" ");
+        let (head, tail, output_location) = parse_input(input).expect("Error parsing input");//.collect::<Vec<&str>>());//.join(" ");
 
 
         Self {
             head,
             tail,
+            output_location,
         }
     }
 }
 
 // this was from chatgpt and it seems to work, make sure you understand it
-fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
+fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocation)> {
     let input = input.trim();
     if input.is_empty() {
         return None;
@@ -156,7 +165,20 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>)> {
 
     // Use the first token as the head and the remaining as the arguments.
     let head = tokens.remove(0);
-    Some((Some(head), tokens))
+
+    let output_location = if tokens.len() > 1 {
+        if tokens[tokens.len() - 2] == ">" || tokens[tokens.len() - 2] == "1>" {
+            OutputLocation::File(tokens[tokens.len() - 1].clone())
+        } else if tokens[tokens.len() - 2] == ">>" {
+            OutputLocation::AppendToFile(tokens[tokens.len() - 1].clone())
+        } else {
+            OutputLocation::Console
+        }
+    } else {
+        OutputLocation::Console
+    };
+
+    Some((Some(head), tokens, output_location))
 }
 
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
@@ -167,29 +189,29 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         "exit" => exit(my_command.tail[0].parse().unwrap()),
         "echo" => {
             let output = format!("{}", my_command.tail.join(" "));
-            let _res = output_string(&my_command.tail, &output);
+            let _res = output_string(&my_command.tail, &output, &my_command.output_location);
         }
         "type" => {
             //let arg = my_command.tail.clone().into_iter().map(|x| x.as_str());
             for arg in my_command.tail.clone().into_iter() {
                 if CMDS.contains(&arg.as_ref()) {
                     let output = format!("{} is a shell builtin", arg);
-                    let _res = output_string(&my_command.tail, &output);
+                    let _res = output_string(&my_command.tail, &output, &my_command.output_location);
                 } 
                 else if let Some(path) = find_executable_in_path(&arg) {
                     let output = format!("{} is {}", arg, path.to_str().unwrap());
-                    let _res = output_string(&my_command.tail, &output);
+                    let _res = output_string(&my_command.tail, &output, &my_command.output_location);
                 } 
                 else {
                     let output = format!("{} not found", my_command.tail.join(" "));
-                    let _res = output_string(&my_command.tail, &output);
+                    let _res = output_string(&my_command.tail, &output, &my_command.output_location);
                 }
             }
         }
         "pwd" => {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
             let output = format!("{}", curr_dir);
-            let _res = output_string(&my_command.tail, &output);
+            let _res = output_string(&my_command.tail, &output, &my_command.output_location);
             //println!("{}", curr_dir);
         }
         "cd" => change_directory(&my_command.tail[0]),
@@ -212,7 +234,7 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             }
             else {
                 let output = format!("{}: command not found", &my_head);
-                let _res = output_string(&my_command.tail, &output);
+                let _res = output_string(&my_command.tail, &output, &my_command.output_location);
                 //println!("{}: command not found", &my_head)
             }
         }
@@ -278,7 +300,23 @@ pub fn is_surrounded_by_quotes(argument: &str) -> bool {
 }
 
 
-pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn output_string(tail: &Vec<String>, output: &str, output_location: &OutputLocation) -> Result<(), Box<dyn std::error::Error>> {
+    
+    match output_location {
+        OutputLocation::Console => {
+            println!("{}", output);
+        }
+        OutputLocation::File(file_path) => {
+            let mut file = File::create(file_path)?;
+            write!(file, "{}", output)?;
+        }
+        OutputLocation::AppendToFile(file_path) => {
+            let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
+            write!(file, "{}", output)?;
+        }
+    }
+    Ok(())
+    
     /*
     PLAN
     - take the output string and tail
@@ -289,6 +327,7 @@ pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std
 
      */
 
+     /*
     let new_tail = tail.clone();
 
     if new_tail.len() > 1 {
@@ -314,7 +353,9 @@ pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std
 
 
     println!("{}", output);
+    
     Ok(())
+    */
 }
 
 
