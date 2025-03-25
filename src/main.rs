@@ -247,8 +247,7 @@ fn change_directory(dir: &str) {
         let res = set_current_dir(path);
 
         if res.is_err() {
-            let output = format!("cd: {}: No such file or directory", dir);
-            output_string(&my_command.tail, &output);
+            println!("cd: {}: No such file or directory", dir);
         }
     }
     else {
@@ -256,15 +255,13 @@ fn change_directory(dir: &str) {
         let path = Path::new(dir).canonicalize();
         
         if path.is_err() {
-            let output = format!("cd: {}: No such file or directory", dir);
-            output_string(&my_command.tail, &output);
+            println!("cd: {}: No such file or directory", dir);
         }
         else {
             let res = set_current_dir(path.unwrap());
     
             if res.is_err() {
-                let output = format!("cd: {}: No such file or directory", dir);
-                output_string(&my_command.tail, &output);
+                println!("cd: {}: No such file or directory", dir);
             }
         }
     }
