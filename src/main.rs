@@ -259,15 +259,15 @@ fn main() {
     // Uncomment this block to pass the first stage
     loop {
         //print_prompt().expect("couldn't print $");
-        //print!("$ ");
-
+        print!("$ ");
+        io::stdout().flush().unwrap();
         //output
-        let mut stdout_file: Box<dyn Write> = Box::new(io::stdout());
+        //let mut stdout_file: Box<dyn Write> = Box::new(io::stdout());
 
-        let message = "$ ";
+        //let message = "$ ";
 
-        write!(stdout_file, "{}", message).unwrap();
-        stdout_file.flush().unwrap();
+        //write!(stdout_file, "{}", message).unwrap();
+        //stdout_file.flush().unwrap();
         
 
         // Wait for user input
