@@ -167,29 +167,29 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         "exit" => exit(my_command.tail[0].parse().unwrap()),
         "echo" => {
             let output = format!("{}", my_command.tail.join(" "));
-            output_string(&my_command.tail, &output);
+            let _res = output_string(&my_command.tail, &output);
         }
         "type" => {
             //let arg = my_command.tail.clone().into_iter().map(|x| x.as_str());
             for arg in my_command.tail.clone().into_iter() {
                 if CMDS.contains(&arg.as_ref()) {
                     let output = format!("{} is a shell builtin", arg);
-                    output_string(&my_command.tail, &output);
+                    let _res = output_string(&my_command.tail, &output);
                 } 
                 else if let Some(path) = find_executable_in_path(&arg) {
                     let output = format!("{} is {}", arg, path.to_str().unwrap());
-                    output_string(&my_command.tail, &output);
+                    let _res = output_string(&my_command.tail, &output);
                 } 
                 else {
                     let output = format!("{} not found", my_command.tail.join(" "));
-                    output_string(&my_command.tail, &output);
+                    let _res = output_string(&my_command.tail, &output);
                 }
             }
         }
         "pwd" => {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
             let output = format!("{}", curr_dir);
-            output_string(&my_command.tail, &output);
+            let _res = output_string(&my_command.tail, &output);
             //println!("{}", curr_dir);
         }
         "cd" => change_directory(&my_command.tail[0]),
@@ -212,7 +212,7 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             }
             else {
                 let output = format!("{}: command not found", &my_head);
-                output_string(&my_command.tail, &output);
+                let _res = output_string(&my_command.tail, &output);
                 //println!("{}: command not found", &my_head)
             }
         }
@@ -291,7 +291,7 @@ pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std
 
     let new_tail = tail.clone();
 
-    if (new_tail.len() > 1) {
+    if new_tail.len() > 1 {
         if new_tail[new_tail.len()-2] == ">" || new_tail[new_tail.len()-2] == "1>" {
             let filepath = &new_tail[new_tail.len()-1];
             let mut file = File::create(filepath)?;
