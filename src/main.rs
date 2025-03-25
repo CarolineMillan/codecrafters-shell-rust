@@ -291,15 +291,24 @@ pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std
 
     let new_tail = tail.clone();
 
-    if (new_tail.len() > 1) && ((new_tail[1] == ">") || (new_tail[1] == "1>")) {
+    if (new_tail.len() > 1) {
+        if new_tail[new_tail.len()-2] == ">" || new_tail[new_tail.len()-2] == "1>" {
+            let filepath = &new_tail[new_tail.len()-1];
+            let mut file = File::create(filepath)?;
+            write!(&file, "{}", output)?;
+            return Ok(());
+        }
+    }
+        //&& ((new_tail[1] == ">") || (new_tail[1] == "1>")) {
         // redirect output to tail[2]
-        let file = File::create(&new_tail[2])?;
+        //let file = File::create(&new_tail[2])?;
         //file.write_all(header.as_bytes())?;
         //write!(&mut new_tail[2], "{}", output).unwrap();
-        write!(&file, "{}", output).unwrap();
-    } else {
-        println!("{}", output)
-    }
+        //write!(&file, "{}", output).unwrap();
+    //}
+
+
+    println!("{}", output);
     Ok(())
 }
 
