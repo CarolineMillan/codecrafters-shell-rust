@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{current_dir, set_current_dir, var}, io::{self, Write}, path::Path, process::Command};
+use std::{env::{current_dir, set_current_dir, var}, fs::File, io::{self, Write}, path::Path, process::Command};
 use std::process::exit;
 use std::fmt::Write as OtherWrite;
 
@@ -278,7 +278,7 @@ pub fn is_surrounded_by_quotes(argument: &str) -> bool {
 }
 
 
-pub fn output_string(tail: &Vec<String>, output: &str) {
+pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std::error::Error>> {
     /*
     PLAN
     - take the output string and tail
@@ -289,17 +289,18 @@ pub fn output_string(tail: &Vec<String>, output: &str) {
 
      */
 
-    let mut new_tail = tail.clone();
+    let new_tail = tail.clone();
 
     if (new_tail.len() > 1) && ((new_tail[1] == ">") || (new_tail[1] == "1>")) {
         // redirect output to tail[2]
-        //let mut file = File::create(tail[2])?;
+        let file = File::create(&new_tail[2])?;
         //file.write_all(header.as_bytes())?;
-        write!(&mut new_tail[2], "{}", output).unwrap();
+        //write!(&mut new_tail[2], "{}", output).unwrap();
+        write!(&file, "{}", output).unwrap();
     } else {
         println!("{}", output)
     }
-    
+    Ok(())
 }
 
 
