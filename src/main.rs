@@ -259,8 +259,14 @@ fn main() {
     // Uncomment this block to pass the first stage
     loop {
         //print_prompt().expect("couldn't print $");
-        eprint!("$ ");
-        io::stdout().flush().unwrap();
+        //print!("$ ");
+        let mut output = io::stdout();//.flush().unwrap();
+
+        let message = "$";
+
+        write!(output, "{}", message).unwrap();
+        output.flush().unwrap();
+        
 
         // Wait for user input
         let stdin = io::stdin();
