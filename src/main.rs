@@ -166,19 +166,30 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
     // Use the first token as the head and the remaining as the arguments.
     let head = tokens.remove(0);
 
-    let output_location = if tokens.len() > 1 {
-        if tokens[tokens.len() - 2] == ">" || tokens[tokens.len() - 2] == "1>" {
-            OutputLocation::File(tokens[tokens.len() - 1].clone())
-        } else if tokens[tokens.len() - 2] == ">>" {
-            OutputLocation::AppendToFile(tokens[tokens.len() - 1].clone())
-        } else {
-            OutputLocation::Console
-        }
-    } else {
-        OutputLocation::Console
-    };
+     // Default output location.
+     let mut output_location = OutputLocation::Console;
 
-    Some((Some(head), tokens, output_location))
+     // New vector to hold tokens that are not related to redirection.
+     let mut filtered_tokens = Vec::new();
+     let mut iter = tokens.into_iter();
+ 
+     // Scan tokens for redirection operators.
+     while let Some(token) = iter.next() {
+         if token == ">" || token == "1>" {
+             // Next token is the file path.
+             if let Some(filepath) = iter.next() {
+                 output_location = OutputLocation::File(filepath);
+             }
+         } else if token == ">>" {
+             if let Some(filepath) = iter.next() {
+                 output_location = OutputLocation::AppendToFile(filepath);
+             }
+         } else {
+             filtered_tokens.push(token);
+         }
+     }
+
+    Some((Some(head), filtered_tokens, output_location))
 }
 
 fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
