@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use pathsearch::find_executable_in_path;
-use std::{env::{current_dir, set_current_dir, var}, fs::File, io::{self, Write}, path::Path, process::Command};
+use std::{env::{current_dir, set_current_dir, var}, fs::{File, OpenOptions}, io::{self, Write}, path::Path, process::Command};
 use std::process::exit;
 use std::fmt::Write as OtherWrite;
 
@@ -298,6 +298,11 @@ pub fn output_string(tail: &Vec<String>, output: &str) -> Result<(), Box<dyn std
             write!(&file, "{}", output)?;
             return Ok(());
         }
+    } else if new_tail[new_tail.len() - 2] == ">>" {
+        let file_path = &new_tail[new_tail.len() - 1];
+        let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
+        write!(file, "{}", output)?;
+        return Ok(());
     }
         //&& ((new_tail[1] == ">") || (new_tail[1] == "1>")) {
         // redirect output to tail[2]
