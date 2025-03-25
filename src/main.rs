@@ -258,7 +258,7 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
 fn main() {
     // Uncomment this block to pass the first stage
     loop {
-        print_prompt().unwrap();
+        print_prompt().expect("couldn't print $");
         //print!("$ ");
         //io::stdout().flush().unwrap();
 
