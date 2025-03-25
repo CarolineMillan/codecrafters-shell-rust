@@ -2,6 +2,7 @@
 use pathsearch::find_executable_in_path;
 use std::{env::{current_dir, set_current_dir, var}, io::{self, Write}, path::Path, process::Command};
 use std::process::exit;
+use std::fmt::Write as OtherWrite;
 
 /*
 
@@ -264,6 +265,31 @@ pub fn is_surrounded_by_quotes(argument: &str) -> bool {
     matches!(argument.chars().next(), Some('\'')) && matches!(argument.chars().last(), Some('\''))
         || matches!(argument.chars().next(), Some('\"'))
             && matches!(argument.chars().last(), Some('\"'))
+}
+
+
+pub fn output_string(tail: &Vec<String>, output: &str) {
+    /*
+    PLAN
+    - take the output string and tail
+    - decide whether to just use println!, or write to file (ie redirect output)
+    
+    tail[1] will be 1> or >
+    tail[2] will be the filepath
+
+     */
+
+    let mut new_tail = tail.clone();
+
+    if (new_tail.len() > 1) && ((new_tail[1] == ">") || (new_tail[1] == "1>")) {
+        // redirect output to tail[2]
+        //let mut file = File::create(tail[2])?;
+        //file.write_all(header.as_bytes())?;
+        write!(&mut new_tail[2], "{}", output).unwrap();
+    } else {
+        println!("{}", output)
+    }
+    
 }
 
 
