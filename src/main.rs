@@ -277,10 +277,10 @@ fn main() {
 }
 
 fn print_prompt() -> io::Result<()> {
-    // Open /dev/tty to write directly to the terminal.
-    let mut tty = OpenOptions::new().write(true).open("/dev/tty")?;
-    write!(tty, "$ ")?;
-    tty.flush()?;
+    // On Windows, "CON" represents the console.
+    let mut con = OpenOptions::new().write(true).open("CON")?;
+    write!(con, "$ ")?;
+    con.flush()?;
     Ok(())
 }
 
