@@ -125,8 +125,14 @@ pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(
     
     match output_location {
         OutputLocation::Console => {
-            println!("{:?}", output.as_bytes());
-            io::stdout().flush().unwrap();
+            // it gets stuck on the following print statement
+            
+            for (i, c) in output.chars().enumerate() {
+                println!("Char {}: '{}' (code {})", i, c, c as u32);
+            }
+            //println!("{}", output);
+            //io::stdout().flush().unwrap();
+            // it never prints this until it has user input 
             println!("I'm free!!");
         }
         OutputLocation::File(file_path) => {
