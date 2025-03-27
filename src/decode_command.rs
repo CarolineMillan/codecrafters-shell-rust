@@ -126,7 +126,7 @@ pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(
     match output_location {
         OutputLocation::Console => {
             println!("{}", output);
-            io::stdout().flush().unwrap();
+            //io::stdout().flush().unwrap();
             println!("I'm free!!");
         }
         OutputLocation::File(file_path) => {
