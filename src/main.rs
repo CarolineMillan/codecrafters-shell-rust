@@ -10,8 +10,11 @@ use std::io::{self, Write};
 
 fn main() {
     loop {
-        print!("$ ");
-        io::stdout().flush().unwrap();
+        //print!("$ ");
+        //io::stdout().flush().unwrap();
+
+        eprint!("$ ");
+        io::stderr().flush().unwrap();
 
         // Wait for user input
         let stdin = io::stdin();
