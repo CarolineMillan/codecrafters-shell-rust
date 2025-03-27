@@ -41,6 +41,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
+            /*
             let mut child = Command::new("cat")
                 .args(&my_command.tail)
                 .spawn()
@@ -49,7 +50,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             print!("\n");
             io::stdout().flush().unwrap();
             // the problem is in this section
-            /* 
+            */ 
             let out = Command::new("cat")
                             .args(my_command.tail)
                             .output()
@@ -57,7 +58,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let output_str = String::from_utf8_lossy(&out.stdout);
             let _res = output_string(&output_str, &my_command.output_location);
             //io::stdout().write_all(&out.stdout).expect("failed to write all to stdout");
-            */
+            
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
@@ -121,7 +122,7 @@ pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(
     match output_location {
         OutputLocation::Console => {
             println!("{}", output);
-            //io::stdout().flush().unwrap();
+            io::stdout().flush().unwrap();
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
