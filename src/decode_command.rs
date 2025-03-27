@@ -48,6 +48,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 .output()
                 .expect("failed to execute process");
             let output_str = String::from_utf8_lossy(&output.stdout);
+            println!("{}", output_str);
             let _res = output_string(&output_str, &my_command.output_location);
             // the problem is in this section
             /* 
