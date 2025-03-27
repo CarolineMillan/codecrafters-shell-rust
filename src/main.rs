@@ -256,19 +256,9 @@ fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
 
 
 fn main() {
-    // Uncomment this block to pass the first stage
     loop {
-        //print_prompt().expect("couldn't print $");
         print!("$ ");
         io::stdout().flush().unwrap();
-        //output
-        //let mut stdout_file: Box<dyn Write> = Box::new(io::stdout());
-
-        //let message = "$ ";
-
-        //write!(stdout_file, "{}", message).unwrap();
-        //stdout_file.flush().unwrap();
-        
 
         // Wait for user input
         let stdin = io::stdin();
@@ -282,14 +272,6 @@ fn main() {
         let _res = decode(my_command);
         
     }
-}
-
-fn print_prompt() -> io::Result<()> {
-    // On Windows, "CON" represents the console.
-    let mut con = OpenOptions::new().write(true).open("CONOUT$")?;
-    write!(con, "$ ")?;
-    con.flush()?;
-    Ok(())
 }
 
 fn change_directory(dir: &str) {
