@@ -46,7 +46,9 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                             .args(my_command.tail)
                             .output()
                             .expect("failed to execute process");
-            io::stdout().write_all(&out.stdout).expect("failed to write all to stdout");
+            let output_str = String::from_utf8_lossy(&out.stdout);
+            let _res = output_string(&output_str, &my_command.output_location);
+            //io::stdout().write_all(&out.stdout).expect("failed to write all to stdout");
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
@@ -54,8 +56,8 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                                     .args(&my_command.tail)
                                     .output()
                                     .expect("failed to execute file");
-                                let output_str = std::str::from_utf8(&output.stdout)?;
-                                output_string(output_str, &my_command.output_location)?;
+                let output_str = std::str::from_utf8(&output.stdout)?;
+                output_string(output_str, &my_command.output_location)?;
             }
             else {
                 let output = format!("{}: command not found", &my_head);
