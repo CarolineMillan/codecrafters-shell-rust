@@ -127,7 +127,7 @@ pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(
         OutputLocation::Console => {
             println!("{}", output);
             io::stdout().flush().unwrap();
-            println!("I'm free!!");
+            //println!("I'm free!!");
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
