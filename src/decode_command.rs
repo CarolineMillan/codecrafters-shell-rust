@@ -41,12 +41,12 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
-            
+            // the problem is in this section
             let out = Command::new("cat")
                             .args(my_command.tail)
                             .output()
                             .expect("failed to execute process");
-            io::stdout().write_all(&out.stdout).unwrap();
+            io::stdout().write_all(&out.stdout).expect("failed to write all to stdout");
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
