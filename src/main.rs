@@ -9,9 +9,10 @@ use my_command::MyCommand;
 use std::io::{self, Write};
 
 fn main() {
+    print!("$ ");
+    io::stdout().flush().unwrap();
     loop {
-        print!("$ ");
-        io::stdout().flush().unwrap();
+        
 
         // Wait for user input
         let stdin = io::stdin();
@@ -23,8 +24,7 @@ fn main() {
 
         // parse the command
         let _res = decode(my_command);
-
-        println!("I'm here!");
-        
+        print!("$ ");
+        io::stdout().flush().unwrap();
     }
 }
