@@ -52,7 +52,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             
             //println!("{}", output_str);
             let _res = output_string(&output_str, &my_command.output_location);
-            println!("I'm free!!");
+            
             // the problem is in this section
             /* 
             let out = Command::new("cat")
@@ -127,14 +127,17 @@ pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(
         OutputLocation::Console => {
             println!("{}", output);
             io::stdout().flush().unwrap();
+            println!("I'm free!!");
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
             writeln!(file, "{}", output)?;
+            println!("I'm free!!");
         }
         OutputLocation::AppendToFile(file_path) => {
             let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
             writeln!(file, "{}", output)?;
+            println!("I'm free!!");
         }
     }
     Ok(())
