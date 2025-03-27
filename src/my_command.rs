@@ -1,3 +1,5 @@
+use std::path::Path;
+
 pub struct MyCommand {
     // head is the command and tail is the arguments (maybe rename the fields..)
     pub head: Option<String>,
@@ -130,11 +132,38 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
         if token == ">" || token == "1>" {
             // Next token is the file path.
             if let Some(filepath) = iter.next() {
+                // check it's a valid filepath
+                //output_location = OutputLocation::File(filepath.clone());
+
+                let path = Path::new(&filepath);
+            // Check if the parent directory exists.
+            // If there is no parent, assume the file is in the current directory.
+            let valid = if let Some(parent) = path.parent() {
+                parent.exists()
+            } else {
+                true
+            };
+
+            if valid {
                 output_location = OutputLocation::File(filepath);
+            } else {
+                eprintln!("Error: Directory for file path '{}' does not exist.", filepath);
+            }
             }
         } else if token == ">>" {
             if let Some(filepath) = iter.next() {
+                let path = Path::new(&filepath);
+            let valid = if let Some(parent) = path.parent() {
+                parent.exists()
+            } else {
+                true
+            };
+
+            if valid {
                 output_location = OutputLocation::AppendToFile(filepath);
+            } else {
+                eprintln!("Error: Directory for file path '{}' does not exist.", filepath);
+            }
             }
         } else {
             filtered_tokens.push(token);
