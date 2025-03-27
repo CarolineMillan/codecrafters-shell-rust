@@ -23,6 +23,8 @@ fn main() {
 
         // parse the command
         let _res = decode(my_command);
+
+        println!("I'm here!");
         
     }
 }
