@@ -46,6 +46,8 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 .spawn()
                 .expect("failed to execute process");
             child.wait().expect("failed to wait on child");
+            print!("\n");
+            io::stdout().flush().unwrap();
             // the problem is in this section
             /* 
             let out = Command::new("cat")
