@@ -47,6 +47,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                             .output()
                             .expect("failed to execute process");
             io::stdout().write_all(&out.stdout).unwrap();
+            println!("$ ");
         
         },
         _ => {
