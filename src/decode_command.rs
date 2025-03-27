@@ -42,16 +42,11 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
             
-            let mut out = Command::new("cat")
+            let out = Command::new("cat")
                             .args(my_command.tail)
                             .output()
                             .expect("failed to execute process");
-            
-            out.stdout.push(b'$');
-            out.stdout.push(b' ');
             io::stdout().write_all(&out.stdout).unwrap();
-            println!("$ ");
-        
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
