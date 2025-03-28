@@ -44,7 +44,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             
             let output = Command::new("cat")
                 .args(&my_command.tail)
-                //.stdin(Stdio::null())  // prevent cat from reading from our shell’s stdin
+                .stdin(Stdio::null())  // prevent cat from reading from our shell’s stdin
                 .stderr(Stdio::piped())
                 .output()
                 .expect("failed to execute process");
@@ -64,7 +64,8 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             */
-            //println!("{}", output_str);
+            if my_command.tail.len() > 1 {println!("{}", &combined);}
+            //println!("{}", combined);
             let _res = output_string(&combined, &my_command.output_location);
             
             // the problem is in this section

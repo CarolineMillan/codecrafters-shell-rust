@@ -168,7 +168,7 @@ fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
     (filtered_tokens, output_location)
 }
 
-
+/* 
 fn valid(dir: &str) -> bool {
     if dir == "~" {
         // Get the home directory path and check if it exists and is a directory.
@@ -182,112 +182,6 @@ fn valid(dir: &str) -> bool {
         // For a given directory, check if it exists and is a directory.
         let path = Path::new(dir);
         return path.exists() && path.is_dir();
-    }
-}
-
-
-/* 
-fn valid(dir: &str) -> bool {
-
-    if dir == "~" {
-        let path = var("HOME").expect("Error getting home directory");
-        let res = set_current_dir(path);
-
-        if res.is_err() {
-            return false;
-            //println!("cd: {}: No such file or directory", dir);
-        }
-        else {return true;}
-    }
-    else {
-        
-        // get a handle on input path
-        let path = Path::new(dir).canonicalize();
-        
-        if path.is_err() {
-            return false;
-            //println!("cd: {}: No such file or directory", dir);
-        }
-        else {
-            let res = set_current_dir(path.unwrap());
-
-            if res.is_err() {
-                return false;
-                //println!("cd: {}: No such file or directory", dir);
-            
-            }
-            else {return true;}
-        }
-    }
-}
-*/
-/*
-if dir == "~" {
-    let path = var("HOME").expect("Error getting home directory");
-    let res = set_current_dir(path);
-
-    if res.is_err() {
-        println!("cd: {}: No such file or directory", dir);
-    }
-}
-else {
-    // get a handle on input path
-    let path = Path::new(dir).canonicalize();
-    
-    if path.is_err() {
-        println!("cd: {}: No such file or directory", dir);
-    }
-    else {
-        let res = set_current_dir(path.unwrap());
-
-        if res.is_err() {
-            println!("cd: {}: No such file or directory", dir);
-        }
-    }
-}
-
-
-
-use std::path::Path;
-
-while let Some(token) = iter.next() {
-    if token == ">" || token == "1>" {
-        // Next token is the file path.
-        if let Some(filepath) = iter.next() {
-            let path = Path::new(&filepath);
-            // Check if the parent directory exists.
-            // If there is no parent, assume the file is in the current directory.
-            let valid = if let Some(parent) = path.parent() {
-                parent.exists()
-            } else {
-                true
-            };
-
-            if valid {
-                output_location = OutputLocation::File(filepath);
-            } else {
-                eprintln!("Error: Directory for file path '{}' does not exist.", filepath);
-                // You can decide what to do next: either set a default location,
-                // skip redirection, or return an error.
-            }
-        }
-    } else if token == ">>" {
-        if let Some(filepath) = iter.next() {
-            let path = Path::new(&filepath);
-            let valid = if let Some(parent) = path.parent() {
-                parent.exists()
-            } else {
-                true
-            };
-
-            if valid {
-                output_location = OutputLocation::AppendToFile(filepath);
-            } else {
-                eprintln!("Error: Directory for file path '{}' does not exist.", filepath);
-            }
-        }
-    } else {
-        filtered_tokens.push(token);
     }
 }
 */
