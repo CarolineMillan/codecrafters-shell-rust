@@ -121,21 +121,21 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
     let head = tokens.remove(0);
 
     // SET OUTPUT LOCATION
-    let (filtered_tokens, output_location) = set_output_location(tokens);
+    let (filtered_tokens, output_location) = set_output_location(&head, tokens);
 
     Some((Some(head), filtered_tokens, output_location))
 }
 
 
-fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
+fn set_output_location(head: &str, tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
     // Default output location.
     let mut output_location = OutputLocation::Console;
 
     // New vector to hold tokens that are not related to redirection.
     let mut filtered_tokens = Vec::new();
-    let mut iter = tokens.clone().into_iter();
+    let mut iter = tokens.into_iter();
 
-    let head = tokens[0].clone();
+    //let head = tokens[0].clone();
 
     // Scan tokens for redirection operators.
     while let Some(token) = iter.next() {
