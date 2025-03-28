@@ -47,7 +47,8 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             
             let output = Command::new("cat")
                 .args(&my_command.tail)
-                .stdin(Stdio::null())  // prevent cat from reading from our shell’s stdin
+                //.stdin(Stdio::null())  // prevent cat from reading from our shell’s stdin
+                .stderr(Stdio::piped())
                 .output()
                 .expect("failed to execute process");
             
