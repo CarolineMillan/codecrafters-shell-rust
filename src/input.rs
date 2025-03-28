@@ -15,6 +15,16 @@ pub enum OutputLocation {
     AppendToFile(String),  // Append to file for '>>'
 }
 
+impl OutputLocation {
+    pub fn get_filepath(&self) -> Option<&str> {
+        match self {
+            OutputLocation::File(ref filepath) => Some(filepath.as_str()),
+            OutputLocation::AppendToFile(ref filepath) => Some(filepath.as_str()),
+            _ => None,
+        }
+    }
+}
+
 
 // valid commands
 pub const CMDS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];

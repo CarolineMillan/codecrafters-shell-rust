@@ -49,6 +49,11 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 .expect("failed to execute process");
             
             let output_str = String::from_utf8_lossy(&output.stdout);
+
+            let filepath = my_command.output_location.get_filepath().unwrap();
+            if !valid(filepath) {
+                println!("{}: {}: No such file or directory", &my_head, filepath)
+            }
             
             //println!("{}", output_str);
             let _res = output_string(&output_str, &my_command.output_location);
@@ -81,6 +86,22 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     Ok(())
+}
+
+fn valid(dir: &str) -> bool {
+    if dir == "~" {
+        // Get the home directory path and check if it exists and is a directory.
+        if let Ok(home) = var("HOME") {
+            let path = Path::new(&home);
+            return path.exists() && path.is_dir();
+        } else {
+            return false;
+        }
+    } else {
+        // For a given directory, check if it exists and is a directory.
+        let path = Path::new(dir);
+        return path.exists() && path.is_dir();
+    }
 }
 
 
