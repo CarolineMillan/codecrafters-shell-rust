@@ -51,8 +51,8 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             //let output_str = String::from_utf8_lossy(&output.stdout);
             // Combine stdout and stderr
             let mut combined = String::new();
-            combined.push_str(&String::from_utf8_lossy(&out.stdout));
-            combined.push_str(&String::from_utf8_lossy(&out.stderr));
+            combined.push_str(&String::from_utf8_lossy(&output.stdout));
+            combined.push_str(&String::from_utf8_lossy(&output.stderr));
             /* 
             let filepath = my_command.output_location.get_filepath();
 
