@@ -46,6 +46,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 .args(&my_command.tail)
                 .stdin(Stdio::null())  // prevent cat from reading from our shell’s stdin
                 .stderr(Stdio::piped())
+                .stdout(Stdio::piped())  
                 .output()
                 .expect("failed to execute process");
             
@@ -55,8 +56,10 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 // Print the error message to the terminal (stderr)
                 eprint!("{}", String::from_utf8_lossy(&output.stderr));
                 io::stderr().flush().unwrap();
-            } else {
-                // Normal output (write to redirection location)
+            } 
+            
+            // Write valid output to the file if there is any
+            if !output.stdout.is_empty() {
                 let combined = String::from_utf8_lossy(&output.stdout);
                 let _res = output_string(&combined, &my_command.output_location);
             }
