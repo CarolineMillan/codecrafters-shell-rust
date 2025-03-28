@@ -54,6 +54,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let mut combined = String::new();
             combined.push_str(&String::from_utf8_lossy(&output.stdout));
             combined.push_str(&String::from_utf8_lossy(&output.stderr));
+            eprint!("{}", &String::from_utf8_lossy(&output.stderr));
             /* 
             let filepath = my_command.output_location.get_filepath();
 
@@ -64,7 +65,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             */
-            if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
+            //if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
             //println!("{}", combined);
             let _res = output_string(&combined, &my_command.output_location);
             
