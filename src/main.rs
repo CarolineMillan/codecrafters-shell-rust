@@ -1,11 +1,12 @@
 #[allow(unused_imports)]
 
-mod my_command;
+mod input;
 mod decode_command;
 
-use crate::my_command::CMDS;
+
+use input::{MyCommand, CMDS};
+
 use crate::decode_command::decode;
-use my_command::MyCommand;
 use std::io::{self, Write};
 
 fn main() {

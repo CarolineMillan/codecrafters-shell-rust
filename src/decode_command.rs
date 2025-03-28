@@ -1,6 +1,6 @@
 
 use crate::CMDS;
-use crate::my_command::OutputLocation;
+use crate::input::OutputLocation;
 use crate::MyCommand;
 use pathsearch::find_executable_in_path;
 use std::{env::{current_dir, set_current_dir, var}, fs::{File, OpenOptions}, io::{self, Write}, path::Path, process::{Command, Stdio}};
