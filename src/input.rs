@@ -153,21 +153,13 @@ fn set_output_location(head: &str, tokens: Vec<String>) -> (Vec<String>, OutputL
             // Next token is the file path.
             if let Some(filepath) = iter.next() {
                 // check it's a valid filepath
-                if valid(&filepath) {
                     output_location = OutputLocation::File(filepath);
-                }
-                else {
-                    println!("{}: {}: No such file or directory", head, filepath)
-                }
+                
             }
         } else if token == ">>" {
             if let Some(filepath) = iter.next() {
-                if valid(&filepath) {
-                    output_location = OutputLocation::AppendToFile(filepath);
-                }
-                else {
-                    println!("{}: {}: No such file or directory", head, filepath)
-                }
+                output_location = OutputLocation::AppendToFile(filepath);
+                
             }
         } else {
             filtered_tokens.push(token);
