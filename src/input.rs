@@ -173,10 +173,10 @@ fn valid(dir: &str) -> bool {
         let res = set_current_dir(path);
 
         if res.is_err() {
-            false
+            return false;
             //println!("cd: {}: No such file or directory", dir);
         }
-        else {true}
+        else {return true;}
     }
     else {
         
@@ -184,18 +184,18 @@ fn valid(dir: &str) -> bool {
         let path = Path::new(dir).canonicalize();
         
         if path.is_err() {
-            false
+            return false;
             //println!("cd: {}: No such file or directory", dir);
         }
         else {
             let res = set_current_dir(path.unwrap());
 
             if res.is_err() {
-                false
+                return false;
                 //println!("cd: {}: No such file or directory", dir);
             
             }
-            else {true}
+            else {return true;}
         }
     }
 }
