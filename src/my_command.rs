@@ -1,5 +1,3 @@
-use std::path::Path;
-
 pub struct MyCommand {
     // head is the command and tail is the arguments (maybe rename the fields..)
     pub head: Option<String>,
@@ -12,6 +10,12 @@ pub enum OutputLocation {
     Console,
     File(String),  // File path for output redirection
     AppendToFile(String),  // Append to file for '>>'
+}
+
+impl OutputLocation {
+    fn valid(&self) -> bool {
+        
+    }
 }
 
 // valid commands
@@ -119,7 +123,9 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
     let head = tokens.remove(0);
 
     // SET OUTPUT LOCATION
+    let (filtered_tokens, output_location) = set_output_location(tokens);
 
+    /* 
     // Default output location.
     let mut output_location = OutputLocation::Console;
 
@@ -133,9 +139,82 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
             // Next token is the file path.
             if let Some(filepath) = iter.next() {
                 // check it's a valid filepath
-                //output_location = OutputLocation::File(filepath.clone());
+                output_location = OutputLocation::File(filepath);
+            }
+        } else if token == ">>" {
+            if let Some(filepath) = iter.next() {
+                output_location = OutputLocation::AppendToFile(filepath);
+            }
+        } else {
+            filtered_tokens.push(token);
+        }
+    }
+    */
+    Some((Some(head), filtered_tokens, output_location))
+}
 
-                let path = Path::new(&filepath);
+
+fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
+    // Default output location.
+    let mut output_location = OutputLocation::Console;
+
+    // New vector to hold tokens that are not related to redirection.
+    let mut filtered_tokens = Vec::new();
+    let mut iter = tokens.into_iter();
+
+    // Scan tokens for redirection operators.
+    while let Some(token) = iter.next() {
+        if token == ">" || token == "1>" {
+            // Next token is the file path.
+            if let Some(filepath) = iter.next() {
+                // check it's a valid filepath
+                output_location = OutputLocation::File(filepath);
+            }
+        } else if token == ">>" {
+            if let Some(filepath) = iter.next() {
+                output_location = OutputLocation::AppendToFile(filepath);
+            }
+        } else {
+            filtered_tokens.push(token);
+        }
+    }
+    (filtered_tokens, output_location)
+}
+
+
+if dir == "~" {
+    let path = var("HOME").expect("Error getting home directory");
+    let res = set_current_dir(path);
+
+    if res.is_err() {
+        println!("cd: {}: No such file or directory", dir);
+    }
+}
+else {
+    // get a handle on input path
+    let path = Path::new(dir).canonicalize();
+    
+    if path.is_err() {
+        println!("cd: {}: No such file or directory", dir);
+    }
+    else {
+        let res = set_current_dir(path.unwrap());
+
+        if res.is_err() {
+            println!("cd: {}: No such file or directory", dir);
+        }
+    }
+}
+
+
+
+use std::path::Path;
+
+while let Some(token) = iter.next() {
+    if token == ">" || token == "1>" {
+        // Next token is the file path.
+        if let Some(filepath) = iter.next() {
+            let path = Path::new(&filepath);
             // Check if the parent directory exists.
             // If there is no parent, assume the file is in the current directory.
             let valid = if let Some(parent) = path.parent() {
@@ -148,11 +227,13 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
                 output_location = OutputLocation::File(filepath);
             } else {
                 eprintln!("Error: Directory for file path '{}' does not exist.", filepath);
+                // You can decide what to do next: either set a default location,
+                // skip redirection, or return an error.
             }
-            }
-        } else if token == ">>" {
-            if let Some(filepath) = iter.next() {
-                let path = Path::new(&filepath);
+        }
+    } else if token == ">>" {
+        if let Some(filepath) = iter.next() {
+            let path = Path::new(&filepath);
             let valid = if let Some(parent) = path.parent() {
                 parent.exists()
             } else {
@@ -164,10 +245,8 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
             } else {
                 eprintln!("Error: Directory for file path '{}' does not exist.", filepath);
             }
-            }
-        } else {
-            filtered_tokens.push(token);
         }
+    } else {
+        filtered_tokens.push(token);
     }
-    Some((Some(head), filtered_tokens, output_location))
 }
