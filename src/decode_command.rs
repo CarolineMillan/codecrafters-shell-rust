@@ -64,9 +64,9 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             */
-            if my_command.tail.len() > 1 {println!("tail: {:?}", &my_command.tail);}
+            //if my_command.tail.len() > 1 {println!("tail: {:?}", &my_command.tail);}
             //println!("{}", combined);
-            let _res = output_string(&combined, &my_command.output_location);
+            let _res = output_string(&combined.trim_end(), &my_command.output_location);
             
             // the problem is in this section
             /* 
