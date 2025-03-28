@@ -51,12 +51,13 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             
             //let output_str = String::from_utf8_lossy(&output.stdout);
             // Combine stdout and stderr
-            let mut combined = String::new();
             if !output.stderr.is_empty() {
-                // If there's any error output, use it.
-                combined.push_str(&String::from_utf8_lossy(&output.stderr));
+                // Print the error message to the terminal (stderr)
+                eprint!("{}", String::from_utf8_lossy(&output.stderr).trim_end());
             } else {
-                combined.push_str(&String::from_utf8_lossy(&output.stdout));
+                // Normal output (write to redirection location)
+                let combined = String::from_utf8_lossy(&output.stdout);
+                let _res = output_string(&combined, &my_command.output_location);
             }
             //eprint!("{}", &String::from_utf8_lossy(&output.stderr));
             /* 
@@ -69,10 +70,17 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             */
-            if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
+            //if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
             //println!("{}", combined);
-            let _res = output_string(&combined, &my_command.output_location);
+            //let _res = output_string(&combined, &my_command.output_location);
             
+            // THE PROBLEM IS 
+            ///
+            /// you now have the correct output error in combined
+            /// but you want the error message to be printed to shell
+
+
+
             // the problem is in this section
             /* 
             let out = Command::new("cat")
