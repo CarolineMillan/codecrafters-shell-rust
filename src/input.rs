@@ -20,6 +20,8 @@ impl OutputLocation {
 }
     */
 
+    //change
+
 // valid commands
 pub const CMDS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
 
