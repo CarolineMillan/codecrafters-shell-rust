@@ -166,6 +166,25 @@ fn set_output_location(head: &str, tokens: Vec<String>) -> (Vec<String>, OutputL
     (filtered_tokens, output_location)
 }
 
+
+fn valid(dir: &str) -> bool {
+    if dir == "~" {
+        // Get the home directory path and check if it exists and is a directory.
+        if let Ok(home) = var("HOME") {
+            let path = Path::new(&home);
+            return path.exists() && path.is_dir();
+        } else {
+            return false;
+        }
+    } else {
+        // For a given directory, check if it exists and is a directory.
+        let path = Path::new(dir);
+        return path.exists() && path.is_dir();
+    }
+}
+
+
+/* 
 fn valid(dir: &str) -> bool {
 
     if dir == "~" {
@@ -199,7 +218,7 @@ fn valid(dir: &str) -> bool {
         }
     }
 }
-
+*/
 /*
 if dir == "~" {
     let path = var("HOME").expect("Error getting home directory");
