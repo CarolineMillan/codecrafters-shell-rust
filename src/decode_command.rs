@@ -50,6 +50,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             
             let output_str = String::from_utf8_lossy(&output.stdout);
 
+            /* 
             let filepath = my_command.output_location.get_filepath();
 
             if filepath.is_some(){
@@ -58,6 +59,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                     println!("{}: {}: No such file or directory", &my_head, filepath.unwrap())
                 }
             }
+            */
             //println!("{}", output_str);
             let _res = output_string(&output_str, &my_command.output_location);
             

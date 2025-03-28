@@ -131,13 +131,13 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
     let head = tokens.remove(0);
 
     // SET OUTPUT LOCATION
-    let (filtered_tokens, output_location) = set_output_location(&head, tokens);
+    let (filtered_tokens, output_location) = set_output_location(tokens);
 
     Some((Some(head), filtered_tokens, output_location))
 }
 
 
-fn set_output_location(head: &str, tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
+fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
     // Default output location.
     let mut output_location = OutputLocation::Console;
 
