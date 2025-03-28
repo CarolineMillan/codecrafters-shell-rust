@@ -69,7 +69,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             */
-            //if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
+            if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
             //println!("{}", combined);
             let _res = output_string(&combined, &my_command.output_location);
             
