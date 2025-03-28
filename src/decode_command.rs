@@ -41,7 +41,10 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
-            println!("{:?}", &my_command.tail);
+            if my_command.tail.len() > 1 {
+                println!("{:?}", &my_command.tail);
+            }
+            
             let output = Command::new("cat")
                 .args(&my_command.tail)
                 .stdin(Stdio::null())  // prevent cat from reading from our shell’s stdin
