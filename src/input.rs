@@ -133,7 +133,7 @@ fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
 
     // New vector to hold tokens that are not related to redirection.
     let mut filtered_tokens = Vec::new();
-    let mut iter = tokens.into_iter();
+    let mut iter = tokens.clone().into_iter();
 
     let head = tokens[0].clone();
 
