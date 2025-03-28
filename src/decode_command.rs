@@ -54,6 +54,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             if !output.stderr.is_empty() {
                 // Print the error message to the terminal (stderr)
                 eprint!("{}", String::from_utf8_lossy(&output.stderr));
+                io::stderr().flush().unwrap();
             } else {
                 // Normal output (write to redirection location)
                 let combined = String::from_utf8_lossy(&output.stdout);
