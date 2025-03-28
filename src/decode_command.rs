@@ -37,7 +37,6 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let curr_dir = current_dir().expect("Problem getting current directory").into_os_string().into_string().expect("Error getting current directory as string.");
             let output = format!("{}", curr_dir);
             let _res = output_string(&output, &my_command.output_location);
-            //println!("{}", curr_dir);
         }
         "cd" => change_directory(&my_command.tail[0]),
         "cat" => {
@@ -96,22 +95,6 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     Ok(())
-}
-
-fn valid(dir: &str) -> bool {
-    if dir == "~" {
-        // Get the home directory path and check if it exists and is a directory.
-        if let Ok(home) = var("HOME") {
-            let path = Path::new(&home);
-            return path.exists() && path.is_dir();
-        } else {
-            return false;
-        }
-    } else {
-        // For a given directory, check if it exists and is a directory.
-        let path = Path::new(dir);
-        return path.exists() && path.is_dir();
-    }
 }
 
 
