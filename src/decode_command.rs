@@ -74,14 +74,8 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             //println!("{}", combined);
             //let _res = output_string(&combined, &my_command.output_location);
             
-            // THE PROBLEM IS 
-            ///
-            /// you now have the correct output error in combined
-            /// but you want the error message to be printed to shell
 
 
-
-            // the problem is in this section
             /* 
             let out = Command::new("cat")
                             .args(my_command.tail)
