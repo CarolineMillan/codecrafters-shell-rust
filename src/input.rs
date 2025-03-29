@@ -1,4 +1,4 @@
-use std::{env::{set_current_dir, var}, path::Path, process::Output};
+use std::{env::{set_current_dir, var}, fs::File, path::Path, process::Output};
 
 
 pub struct MyCommand {
@@ -168,7 +168,8 @@ fn set_output_locations(tokens: Vec<String>) -> (Vec<String>, OutputLocation, Ou
             // Next token is the file path.
             if let Some(filepath) = iter.next() {
                 // check it's a valid filepath
-                    error_location = OutputLocation::File(filepath);
+                File::create(&filepath).expect("Error creating log file.");
+                error_location = OutputLocation::File(filepath);
                 
             }
         } else if token == "2>>" {
