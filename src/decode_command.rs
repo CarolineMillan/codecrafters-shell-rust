@@ -76,11 +76,11 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
 
             // Handle standard output:
             let stdout_str = String::from_utf8_lossy(&output.stdout);
-            let _resout = output_string(&stdout_str, &my_command.output_location);
+            let _resout = output_string(&stdout_str.trim_end(), &my_command.output_location);
 
             // Handle standard error:
             let stderr_str = String::from_utf8_lossy(&output.stderr);
-            let _reserr = output_error(&stderr_str, &my_command.error_location);
+            let _reserr = output_error(&stderr_str.trim_end(), &my_command.error_location);
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
@@ -88,8 +88,13 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                                     .args(&my_command.tail)
                                     .output()
                                     .expect("failed to execute file");
-                let output_str = std::str::from_utf8(&output.stdout)?;
-                output_string(output_str, &my_command.output_location)?;
+                //let output_str = std::str::from_utf8(&output.stdout)?;
+                //output_string(output_str, &my_command.output_location)?;
+
+                    // Handle standard output:
+                let stdout_str = String::from_utf8_lossy(&output.stdout);
+                let _resout = output_string(&stdout_str, &my_command.output_location);
+
 
                     
                 // Handle standard error:
