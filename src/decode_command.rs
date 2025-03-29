@@ -7,7 +7,7 @@ use std::{env::{current_dir, set_current_dir, var}, fs::{File, OpenOptions}, io:
 use std::process::exit;
 
 pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", my_command.head.clone().unwrap());
+    //println!("{}", my_command.head.clone().unwrap());
     let my_head = my_command.head.unwrap();
     match my_head.as_ref() {
         // exit w code 0
@@ -53,8 +53,10 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             // Combine stdout and stderr
             if !output.stderr.is_empty() {
                 // Print the error message to the terminal (stderr)
-                eprint!("{}", String::from_utf8_lossy(&output.stderr));
-                io::stderr().flush().unwrap();
+                let err = String::from_utf8_lossy(&output.stderr);
+                let _res = output_error(&err, &my_command.error_location);
+                //eprint!("{}", String::from_utf8_lossy(&output.stderr));
+                //io::stderr().flush().unwrap();
             } 
             
             // Write valid output to the file if there is any
@@ -62,6 +64,23 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 let combined = String::from_utf8_lossy(&output.stdout);
                 let _res = output_string(&combined, &my_command.output_location);
             }
+        },
+        "ls" => {
+            let output = Command::new("ls")
+                .args(&my_command.tail)
+                .stdin(Stdio::null())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .output()
+                .expect("failed to execute ls command");
+
+            // Handle standard output:
+            let stdout_str = String::from_utf8_lossy(&output.stdout);
+            let _resout = output_string(&stdout_str, &my_command.output_location);
+
+            // Handle standard error:
+            let stderr_str = String::from_utf8_lossy(&output.stderr);
+            let _reserr = output_error(&stderr_str, &my_command.error_location);
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
@@ -71,10 +90,15 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                                     .expect("failed to execute file");
                 let output_str = std::str::from_utf8(&output.stdout)?;
                 output_string(output_str, &my_command.output_location)?;
+
+                    
+                // Handle standard error:
+                let stderr_str = String::from_utf8_lossy(&output.stderr);
+                let _reserr = output_error(&stderr_str, &my_command.error_location);
             }
             else {
                 let output = format!("{}: command not found", &my_head);
-                let _res = output_string(&output, &my_command.output_location);
+                let _res = output_error(&output, &my_command.error_location);
                 //println!("{}: command not found", &my_head)
             }
         }
@@ -89,9 +113,9 @@ fn change_directory(dir: &str, error_location: &OutputLocation) {
         let res = set_current_dir(path);
 
         if res.is_err() {
-            println!("cd: {}: No such file or directory", dir);
-            //let err = format!("cd: {}: No such file or directory", dir);
-            //let _res = output_error(&err, error_location);
+            //println!("cd: {}: No such file or directory", dir);
+            let err = format!("cd: {}: No such file or directory", dir);
+            let _res = output_error(&err, error_location);
         }
     }
     else {
@@ -99,17 +123,17 @@ fn change_directory(dir: &str, error_location: &OutputLocation) {
         let path = Path::new(dir).canonicalize();
         
         if path.is_err() {
-            println!("cd: {}: No such file or directory", dir);
-            //let err = format!("cd: {}: No such file or directory", dir);
-            //let _res = output_error(&err, error_location);
+            //println!("cd: {}: No such file or directory", dir);
+            let err = format!("cd: {}: No such file or directory", dir);
+            let _res = output_error(&err, error_location);
         }
         else {
             let res = set_current_dir(path.unwrap());
     
             if res.is_err() {
-                println!("cd: {}: No such file or directory", dir);
-                //let err = format!("cd: {}: No such file or directory", dir);
-                //let _res = output_error(&err, error_location);
+                //println!("cd: {}: No such file or directory", dir);
+                let err = format!("cd: {}: No such file or directory", dir);
+                let _res = output_error(&err, error_location);
             }
         }
     }
