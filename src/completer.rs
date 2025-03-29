@@ -89,7 +89,7 @@ impl Completer for MyHelper {
     fn complete(&self, line: &str, pos: usize, _ctx: &Context<'_>) 
     -> Result<(usize, Vec<Self::Candidate>), ReadlineError> {
         
-        let commands = vec!["echo", "exit"];
+        let commands = vec!["echo ", "exit "];
 
         // Extract the word fragment being completed
         let (start, fragment) = line[..pos]  // Only consider text before the cursor
