@@ -7,7 +7,7 @@ use std::{env::{current_dir, set_current_dir, var}, fs::{File, OpenOptions}, io:
 use std::process::exit;
 
 pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", my_command.head.unwrap());
+    println!("{}", my_command.head.clone().unwrap());
     let my_head = my_command.head.unwrap();
     match my_head.as_ref() {
         // exit w code 0
