@@ -22,7 +22,7 @@ fn main() {
     //rl.set_completer(Some(MyCompleter));
 
     let mut rl = Editor::<MyHelper, FileHistory>::new().unwrap();
-    rl.set_helper(Some(MyHelper));
+    rl.set_helper(Some(MyHelper::new()));
 
     loop {
         // This prints the prompt and handles autocompletion automatically.

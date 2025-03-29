@@ -1,15 +1,52 @@
 use rustyline::completion::{Candidate, Completer, Pair};
-use rustyline::error::ReadlineError;
+//use rustyline::error::ReadlineError;
 use rustyline::highlight::{CmdKind, Highlighter};
 use rustyline::hint::{Hinter, HistoryHinter};
 use rustyline::validate::{Validator, ValidationContext, ValidationResult};
 use rustyline::{Helper, Context, Result as RLResult};
 use std::borrow::Cow;
+use std::cell::RefCell;
+use std::io::Write;
 use std::{env, fs};
 use std::path::Path;
 
 // Our custom completer
-pub struct MyCompleter;
+pub struct MyCompleter {
+    last_prefix: Option<String>,
+    tab_count: usize,
+}
+
+impl MyCompleter {
+    pub fn new() -> Self {
+        MyCompleter {
+            last_prefix: None,
+            tab_count: 0,
+        }
+    }
+
+    fn find_executables(prefix: &str) -> Vec<String> {
+        let mut matches = Vec::new();
+        if let Some(paths) = env::var_os("PATH") {
+            for dir in env::split_paths(&paths) {
+                if let Ok(entries) = fs::read_dir(dir) {
+                    for entry in entries.flatten() {
+                        let path = entry.path();
+                        if let Some(file_name) = path.file_name().and_then(|s| s.to_str()) {
+                            if file_name.starts_with(prefix) && is_executable(&path) {
+                                matches.push(file_name.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        matches
+    }
+}
+
+fn is_executable(path: &Path) -> bool {
+    path.is_file() && path.metadata().map(|m| m.permissions().readonly()).unwrap_or(false) == false
+}
 
 // Implement the Completer trait.
 impl Completer for MyCompleter {
@@ -83,11 +120,87 @@ impl Validator for MyCompleter {
 impl Helper for MyCompleter {}
 
 
-pub struct MyHelper;
+pub struct MyHelper {
+    last_prefix: RefCell<Option<String>>, // Wrap in RefCell
+    tab_count: RefCell<u8>, // Wrap in RefCell
+}
+
+impl MyHelper {
+    pub fn new() -> Self {
+        MyHelper {
+            last_prefix: RefCell::new(None),
+            tab_count: RefCell::new(0),
+        }
+    }
+    fn find_executables(prefix: &str) -> Vec<String> {
+        let mut matches = Vec::new();
+        if let Some(paths) = env::var_os("PATH") {
+            for dir in env::split_paths(&paths) {
+                if let Ok(entries) = fs::read_dir(dir) {
+                    for entry in entries.flatten() {
+                        let path = entry.path();
+                        if let Some(file_name) = path.file_name().and_then(|s| s.to_str()) {
+                            if file_name.starts_with(prefix) && is_executable(&path) {
+                                matches.push(file_name.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        matches
+    }
+}
 
 impl Completer for MyHelper {
     type Candidate = Pair;
 
+    fn complete(
+        &self, // Must stay immutable
+        line: &str,
+        pos: usize,
+        _ctx: &Context<'_>,
+    ) -> rustyline::Result<(usize, Vec<Self::Candidate>)> {
+        let prefix = &line[..pos];
+        let matches = Self::find_executables(prefix);
+    
+        if matches.is_empty() {
+            return Ok((pos, vec![]));
+        }
+    
+        if matches.len() == 1 {
+            return Ok((pos - prefix.len(), vec![Pair {
+                display: matches[0].clone(),
+                replacement: matches[0].clone() + " ", // Add space after completion
+            }]));
+        }
+    
+        // Mutate state via RefCell
+        let mut last_prefix = self.last_prefix.borrow_mut();
+        let mut tab_count = self.tab_count.borrow_mut();
+    
+        if last_prefix.as_deref() == Some(prefix) {
+            if *tab_count == 1 {
+                println!("\n{}", matches.join("  ")); // Print all matches with 2 spaces
+                print!("$ {} ", prefix); // Reprint prompt with the typed prefix
+                std::io::stdout().flush().unwrap();
+                *tab_count = 0; // Reset tab count after printing matches
+                return Ok((pos, vec![]));
+            }
+            *tab_count += 1;
+        } else {
+            *last_prefix = Some(prefix.to_string());
+            *tab_count = 1;
+            print!("\x07"); // Ring the bell on first tab
+            std::io::stdout().flush().unwrap();
+        }
+    
+        Ok((pos, vec![]))
+    }
+    
+    
+
+    /*
     fn complete(&self, line: &str, pos: usize, _ctx: &Context<'_>) 
     -> Result<(usize, Vec<Self::Candidate>), ReadlineError> {
         
@@ -134,12 +247,15 @@ impl Completer for MyHelper {
         // Your completion logic here
         //Ok((pos, vec![]))
     }
+    */
 
     
 }
+/*
 fn is_executable(path: &Path) -> bool {
     path.is_file() && path.metadata().map(|m| m.permissions().readonly() == false).unwrap_or(false)
 }
+*/
 impl Helper for MyHelper {}
 impl Hinter for MyHelper {
     type Hint = String;
