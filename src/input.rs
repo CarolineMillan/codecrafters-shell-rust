@@ -1,4 +1,4 @@
-use std::{env::{set_current_dir, var}, fs::File, path::Path, process::Output};
+use std::{env::{set_current_dir, var}, fs::{File, OpenOptions}, path::Path, process::Output};
 
 
 pub struct MyCommand {
@@ -174,6 +174,7 @@ fn set_output_locations(tokens: Vec<String>) -> (Vec<String>, OutputLocation, Ou
             }
         } else if token == "2>>" {
             if let Some(filepath) = iter.next() {
+                OpenOptions::new().append(true).create(true).open(&filepath).expect("Error creating log file.");
                 error_location = OutputLocation::AppendToFile(filepath);
                 
             }
