@@ -155,6 +155,7 @@ impl MyHelper {
 impl Completer for MyHelper {
     type Candidate = Pair;
 
+    /*
     fn complete(
         &self, // Must stay immutable
         line: &str,
@@ -201,6 +202,7 @@ impl Completer for MyHelper {
     
         Ok((pos, vec![]))
     }
+    */
     
     
 
