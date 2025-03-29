@@ -57,15 +57,6 @@ impl Hinter for MyCompleter {
 
 impl Highlighter for MyCompleter {
     // Other methods...
-    /*
-    fn highlight_prompt<'a, 'b>(&'a self, prompt: &'b str, _default: bool) -> Cow<'b, str>
-    where
-        Self: 'a,
-    {
-        Cow::Borrowed(prompt)
-    }
-    */
-
     fn highlight<'a, 'b>(&'a self, line: &'b str, _pos: usize) -> Cow<'b, str> {
         Cow::Borrowed(line)
     }
@@ -78,37 +69,6 @@ impl Highlighter for MyCompleter {
         false
     }
 }
-
-
-/*
-// Provide a dummy implementation for Highlighter.
-impl Highlighter for MyCompleter {
-    fn highlight<'l>(&self, line: &'l str, _pos: usize) -> Cow<'l, str> {
-        Cow::Borrowed(line)
-    }
-    fn highlight_prompt<'l>(&self, prompt: &'l str, default: bool) -> Cow<'l, str>
-    where
-        Self: 'l,
-    {
-        Cow::Borrowed(prompt)
-    } 
-    fn highlight_hint<'l>(&self, hint: &'l str) -> Cow<'l, str> {
-        Cow::Borrowed(hint)
-    }
-    fn highlight_char(&self, _line: &str, _pos: usize, _kind: CmdKind) -> bool {
-        false
-    }
-    
-    fn highlight_candidate<'c>(
-        &self,
-        candidate: &'c str, // FIXME should be Completer::Candidate
-        completion: rustyline::CompletionType,
-    ) -> Cow<'c, str> {
-        let _ = completion;
-        Cow::Borrowed(candidate)
-    }
-}
-*/
 
 // Provide a dummy implementation for Validator.
 impl Validator for MyCompleter {
@@ -126,14 +86,33 @@ pub struct MyHelper;
 impl Completer for MyHelper {
     type Candidate = Pair;
 
-    fn complete(
-        &self,
-        line: &str,
-        pos: usize,
-        _ctx: &Context<'_>,
-    ) -> Result<(usize, Vec<Self::Candidate>), ReadlineError> {
+    fn complete(&self, line: &str, pos: usize, _ctx: &Context<'_>) 
+    -> Result<(usize, Vec<Self::Candidate>), ReadlineError> {
+        
+        let commands = vec!["echo", "exit"];
+
+        // Extract the word fragment being completed
+        let (start, fragment) = line[..pos]  // Only consider text before the cursor
+            .rsplit_once(' ')  // Split by last space (handles multiple words)
+            .map(|(before, word)| (before.len() + 1, word)) // Adjust start index
+            .unwrap_or((0, line)); // If no space, complete whole line
+
+        // Find matches
+        let matches: Vec<Pair> = commands
+            .iter()
+            .filter(|cmd| cmd.starts_with(fragment)) // Match commands starting with fragment
+            .map(|cmd| Pair {
+                display: cmd.to_string(),
+                replacement: cmd.to_string(),
+            })
+            .collect();
+
+        // Return completion suggestions
+        Ok((start, matches))
+    
+        
         // Your completion logic here
-        Ok((pos, vec![]))
+        //Ok((pos, vec![]))
     }
 }
 impl Helper for MyHelper {}
