@@ -29,5 +29,6 @@ fn main() {
         let _res = decode(my_command);
 
         io::stdout().flush().unwrap();
+        io::stderr().flush().unwrap();
     }
 }
