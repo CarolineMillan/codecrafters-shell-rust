@@ -55,8 +55,6 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 // Print the error message to the terminal (stderr)
                 let err = String::from_utf8_lossy(&output.stderr);
                 let _res = output_error(&err, &my_command.error_location);
-                //eprint!("{}", String::from_utf8_lossy(&output.stderr));
-                //io::stderr().flush().unwrap();
             } 
             
             // Write valid output to the file if there is any
@@ -96,6 +94,21 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 //let output_str = std::str::from_utf8(&output.stdout)?;
                 //output_string(output_str, &my_command.output_location)?;
                 //println!("I'm free!!");
+                
+                // Combine stdout and stderr
+            if !output.stderr.is_empty() {
+                // Print the error message to the terminal (stderr)
+                let err = String::from_utf8_lossy(&output.stderr);
+                let _res = output_error(&err, &my_command.error_location);
+            } 
+            
+            // Write valid output to the file if there is any
+            if !output.stdout.is_empty() {
+                let combined = String::from_utf8_lossy(&output.stdout);
+                let _res = output_string(&combined, &my_command.output_location);
+            }
+                
+                /*
                     // Handle standard output:
                 let stdout_str = String::from_utf8_lossy(&output.stdout);
                 println!("I'm free!!");
@@ -107,6 +120,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 let stderr_str = String::from_utf8_lossy(&output.stderr);
                 println!("{}", &stderr_str);
                 let _reserr = output_error(&stderr_str, &my_command.error_location);
+            */
             }
             else {
                 let output = format!("{}: command not found", &my_head);
