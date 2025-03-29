@@ -2,13 +2,49 @@
 
 mod input;
 mod decode_command;
+mod completer;
 
 
+use completer::MyHelper;
 use input::{MyCommand, CMDS};
 
 use crate::decode_command::decode;
-use std::io::{self, Write};
+use crate::completer::MyCompleter;
+//use std::io::{self, Write};
+use rustyline::Editor;
+use rustyline::history::{DefaultHistory, FileHistory};
 
+
+fn main() {
+    // Create an editor with our custom completer.
+    //let mut rl = Editor::<MyCompleter, DefaultHistory>::new().unwrap();
+
+    //rl.set_completer(Some(MyCompleter));
+
+    let mut rl = Editor::<MyHelper, FileHistory>::new().unwrap();
+    rl.set_helper(Some(MyHelper));
+
+    loop {
+        // This prints the prompt and handles autocompletion automatically.
+        let readline = rl.readline("$ ");
+        match readline {
+            Ok(line) => {
+                // Optionally add the line to history.
+                let _res = rl.add_history_entry(line.as_str());
+
+                // Process the line with your existing logic:
+                let my_command = MyCommand::new(&line.trim());
+                let _ = decode(my_command);
+
+                // (Any necessary flushing or other I/O can be done here)
+            }
+            Err(_) => break, // e.g. Ctrl-D exits the shell
+        }
+    }
+}
+
+
+/*
 fn main() {
     loop {
         //print!("$ ");
@@ -32,3 +68,4 @@ fn main() {
         io::stderr().flush().unwrap();
     }
 }
+*/
