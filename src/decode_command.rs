@@ -65,6 +65,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 let _res = output_string(&combined, &my_command.output_location);
             }
         },
+        /*
         "ls" => {
             let output = Command::new("ls")
                 .args(&my_command.tail)
@@ -82,10 +83,14 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let stderr_str = String::from_utf8_lossy(&output.stderr);
             let _reserr = output_error(&stderr_str.trim_end(), &my_command.error_location);
         },
+        */
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
                 let output = Command::new(&my_head)
                                     .args(&my_command.tail)
+                                    .stdin(Stdio::null())
+                                    .stdout(Stdio::piped())
+                                    .stderr(Stdio::piped())
                                     .output()
                                     .expect("failed to execute file");
                 //let output_str = std::str::from_utf8(&output.stdout)?;
@@ -191,12 +196,12 @@ pub fn output_error(output: &str, output_location: &OutputLocation) -> Result<()
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
-            writeln!(file, "{}", output)?;
+            writeln!(file, "{}", output.trim_end())?;
             //println!("I'm free!!");
         }
         OutputLocation::AppendToFile(file_path) => {
             let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
-            writeln!(file, "{}", output)?;
+            writeln!(file, "{}", output.trim_end())?;
             //println!("I'm free!!");
         }
     }
