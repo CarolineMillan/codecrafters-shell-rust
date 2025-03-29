@@ -202,7 +202,7 @@ impl Completer for MyHelper {
     
         Ok((pos, vec![]))
     }
-    */
+    
     
     
 
