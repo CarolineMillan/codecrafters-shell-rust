@@ -184,6 +184,7 @@ fn set_output_locations(tokens: Vec<String>) -> (Vec<String>, OutputLocation, Ou
     (filtered_tokens, output_location, error_location)
 }
 
+// change
 /* 
 fn valid(dir: &str) -> bool {
     if dir == "~" {
