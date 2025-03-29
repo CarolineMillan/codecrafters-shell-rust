@@ -104,6 +104,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                     
                 // Handle standard error:
                 let stderr_str = String::from_utf8_lossy(&output.stderr);
+                println!("{}", &stderr_str);
                 let _reserr = output_error(&stderr_str, &my_command.error_location);
             }
             else {
@@ -196,7 +197,7 @@ pub fn output_error(output: &str, output_location: &OutputLocation) -> Result<()
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
-            println!("{}", output);
+            //println!("{}", output);
             writeln!(file, "{}", output.trim_end())?;
             println!("I'm free!!");
         }
