@@ -5,6 +5,8 @@ use rustyline::hint::{Hinter, HistoryHinter};
 use rustyline::validate::{Validator, ValidationContext, ValidationResult};
 use rustyline::{Helper, Context, Result as RLResult};
 use std::borrow::Cow;
+use std::{env, fs};
+use std::path::Path;
 
 // Our custom completer
 pub struct MyCompleter;
@@ -89,13 +91,31 @@ impl Completer for MyHelper {
     fn complete(&self, line: &str, pos: usize, _ctx: &Context<'_>) 
     -> Result<(usize, Vec<Self::Candidate>), ReadlineError> {
         
-        let commands = vec!["echo ", "exit "];
+        let builtins = vec!["echo ", "exit "];
 
         // Extract the word fragment being completed
         let (start, fragment) = line[..pos]  // Only consider text before the cursor
             .rsplit_once(' ')  // Split by last space (handles multiple words)
             .map(|(before, word)| (before.len() + 1, word)) // Adjust start index
             .unwrap_or((0, line)); // If no space, complete whole line
+
+
+        // Collect all executables from PATH
+        let mut commands: Vec<String> = vec!["echo ".to_string(), "exit ".to_string()];
+        if let Some(path) = env::var_os("PATH") {
+            for dir in env::split_paths(&path) {
+                if let Ok(entries) = fs::read_dir(dir) {
+                    for entry in entries.flatten() {
+                        let path = entry.path();
+                        if is_executable(&path) {
+                            if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                                commands.push(name.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Find matches
         let matches: Vec<Pair> = commands
@@ -114,6 +134,11 @@ impl Completer for MyHelper {
         // Your completion logic here
         //Ok((pos, vec![]))
     }
+
+    
+}
+fn is_executable(path: &Path) -> bool {
+    path.is_file() && path.metadata().map(|m| m.permissions().readonly() == false).unwrap_or(false)
 }
 impl Helper for MyHelper {}
 impl Hinter for MyHelper {
