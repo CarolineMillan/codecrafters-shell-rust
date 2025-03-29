@@ -109,7 +109,7 @@ impl Completer for MyHelper {
                         let path = entry.path();
                         if is_executable(&path) {
                             if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
-                                commands.push(name.to_string());
+                                commands.push(format!("{} ", name));
                             }
                         }
                     }
