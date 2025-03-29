@@ -89,9 +89,9 @@ fn change_directory(dir: &str, error_location: &OutputLocation) {
         let res = set_current_dir(path);
 
         if res.is_err() {
-            //println!("cd: {}: No such file or directory", dir);
-            let err = format!("cd: {}: No such file or directory", dir);
-            let _res = output_error(&err, error_location);
+            println!("cd: {}: No such file or directory", dir);
+            //let err = format!("cd: {}: No such file or directory", dir);
+            //let _res = output_error(&err, error_location);
         }
     }
     else {
@@ -99,16 +99,17 @@ fn change_directory(dir: &str, error_location: &OutputLocation) {
         let path = Path::new(dir).canonicalize();
         
         if path.is_err() {
-            let err = format!("cd: {}: No such file or directory", dir);
-            let _res = output_error(&err, error_location);
+            println!("cd: {}: No such file or directory", dir);
+            //let err = format!("cd: {}: No such file or directory", dir);
+            //let _res = output_error(&err, error_location);
         }
         else {
             let res = set_current_dir(path.unwrap());
     
             if res.is_err() {
-                //println!("cd: {}: No such file or directory", dir);
-                let err = format!("cd: {}: No such file or directory", dir);
-                let _res = output_error(&err, error_location);
+                println!("cd: {}: No such file or directory", dir);
+                //let err = format!("cd: {}: No such file or directory", dir);
+                //let _res = output_error(&err, error_location);
             }
         }
     }
