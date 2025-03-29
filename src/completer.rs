@@ -186,7 +186,7 @@ impl Completer for MyHelper {
                 println!("\n{}", sorted_matches.join("  "));
 
                 //println!("\n{}", matches.join("  ")); // Print all matches with 2 spaces
-                print!("$ {} ", prefix); // Reprint prompt with the typed prefix
+                print!("$ {}", prefix.trim_end()); // Reprint prompt with the typed prefix
                 std::io::stdout().flush().unwrap();
                 *tab_count = 0; // Reset tab count after printing matches
                 return Ok((pos, vec![]));
