@@ -38,7 +38,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
             let output = format!("{}", curr_dir);
             let _res = output_string(&output, &my_command.output_location);
         }
-        "cd" => change_directory(&my_command.tail[0]),
+        "cd" => change_directory(&my_command.tail[0], &my_command.error_location),
         "cat" => {
             //if my_command.tail.len() > 1 {println!("{:?}", &my_command.tail);}
             
@@ -50,7 +50,6 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 .output()
                 .expect("failed to execute process");
             
-            //let output_str = String::from_utf8_lossy(&output.stdout);
             // Combine stdout and stderr
             if !output.stderr.is_empty() {
                 // Print the error message to the terminal (stderr)
@@ -63,34 +62,6 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                 let combined = String::from_utf8_lossy(&output.stdout);
                 let _res = output_string(&combined, &my_command.output_location);
             }
-            //eprint!("{}", &String::from_utf8_lossy(&output.stderr));
-            /* 
-            let filepath = my_command.output_location.get_filepath();
-
-            if filepath.is_some(){
-
-                if !valid(filepath.unwrap()) {
-                    println!("{}: {}: No such file or directory", &my_head, filepath.unwrap())
-                }
-            }
-            */
-            //if my_command.tail.len() > 1 {println!("combined: {}, tail: {:?}", &combined.trim_end(), &my_command.tail);}
-            //println!("{}", combined);
-            //let _res = output_string(&combined, &my_command.output_location);
-            
-
-
-
-            // the problem is in this section
-            /* 
-            let out = Command::new("cat")
-                            .args(my_command.tail)
-                            .output()
-                            .expect("failed to execute process");
-            let output_str = String::from_utf8_lossy(&out.stdout);
-            let _res = output_string(&output_str, &my_command.output_location);
-            //io::stdout().write_all(&out.stdout).expect("failed to write all to stdout");
-            */
         },
         _ => {
             if let Some(_path) = find_executable_in_path::<String>(&my_head) {
@@ -112,13 +83,15 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 
-fn change_directory(dir: &str) {
+fn change_directory(dir: &str, error_location: &OutputLocation) {
     if dir == "~" {
         let path = var("HOME").expect("Error getting home directory");
         let res = set_current_dir(path);
 
         if res.is_err() {
-            println!("cd: {}: No such file or directory", dir);
+            //println!("cd: {}: No such file or directory", dir);
+            let err = format!("cd: {}: No such file or directory", dir);
+            let _res = output_error(&err, error_location);
         }
     }
     else {
@@ -126,13 +99,16 @@ fn change_directory(dir: &str) {
         let path = Path::new(dir).canonicalize();
         
         if path.is_err() {
-            println!("cd: {}: No such file or directory", dir);
+            let err = format!("cd: {}: No such file or directory", dir);
+            let _res = output_error(&err, error_location);
         }
         else {
             let res = set_current_dir(path.unwrap());
     
             if res.is_err() {
-                println!("cd: {}: No such file or directory", dir);
+                //println!("cd: {}: No such file or directory", dir);
+                let err = format!("cd: {}: No such file or directory", dir);
+                let _res = output_error(&err, error_location);
             }
         }
     }
@@ -156,6 +132,30 @@ pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(
             // it gets stuck on the following print statement
             println!("{}", output.trim_end());
             io::stdout().flush().unwrap();
+            // it never prints this until it has user input 
+            //println!("I'm free!!");
+        }
+        OutputLocation::File(file_path) => {
+            let mut file = File::create(file_path)?;
+            writeln!(file, "{}", output)?;
+            //println!("I'm free!!");
+        }
+        OutputLocation::AppendToFile(file_path) => {
+            let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
+            writeln!(file, "{}", output)?;
+            //println!("I'm free!!");
+        }
+    }
+    Ok(())
+}
+
+pub fn output_error(output: &str, output_location: &OutputLocation) -> Result<(), Box<dyn std::error::Error>> {
+    
+    match output_location {
+        OutputLocation::Console => {
+            // it gets stuck on the following print statement
+            eprintln!("{}", output.trim_end());
+            io::stderr().flush().unwrap();
             // it never prints this until it has user input 
             //println!("I'm free!!");
         }

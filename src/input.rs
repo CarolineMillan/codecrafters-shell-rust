@@ -1,4 +1,4 @@
-use std::{env::{set_current_dir, var}, path::Path};
+use std::{env::{set_current_dir, var}, path::Path, process::Output};
 
 
 pub struct MyCommand {
@@ -6,6 +6,7 @@ pub struct MyCommand {
     pub head: Option<String>,
     pub tail: Vec<String>,
     pub output_location: OutputLocation,
+    pub error_location: OutputLocation,
 }
 
 #[derive(Debug)]
@@ -31,19 +32,20 @@ pub const CMDS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
 
 impl MyCommand {
     pub fn new(input: &str) -> Self {
-        let (head, tail, output_location) = parse_input(input).expect("Error parsing input");//.collect::<Vec<&str>>());//.join(" ");
+        let (head, tail, output_location, error_location) = parse_input(input).expect("Error parsing input");//.collect::<Vec<&str>>());//.join(" ");
 
         Self {
             head,
             tail,
             output_location,
+            error_location,
         }
     }
 }
 
 
 // this was from chatgpt and it seems to work, make sure you understand it
-fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocation)> {
+fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocation, OutputLocation)> {
     let input = input.trim();
     if input.is_empty() {
         return None;
@@ -131,15 +133,16 @@ fn parse_input(input: &str) -> Option<(Option<String>, Vec<String>, OutputLocati
     let head = tokens.remove(0);
 
     // SET OUTPUT LOCATION
-    let (filtered_tokens, output_location) = set_output_location(tokens);
+    let (filtered_tokens, output_location, error_location) = set_output_locations(tokens);
 
-    Some((Some(head), filtered_tokens, output_location))
+    Some((Some(head), filtered_tokens, output_location, error_location))
 }
 
 
-fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
+fn set_output_locations(tokens: Vec<String>) -> (Vec<String>, OutputLocation, OutputLocation) {
     // Default output location.
     let mut output_location = OutputLocation::Console;
+    let mut error_location = OutputLocation::Console;
 
     // New vector to hold tokens that are not related to redirection.
     let mut filtered_tokens = Vec::new();
@@ -161,11 +164,23 @@ fn set_output_location(tokens: Vec<String>) -> (Vec<String>, OutputLocation) {
                 output_location = OutputLocation::AppendToFile(filepath);
                 
             }
+        } else if token == "2>" {
+            // Next token is the file path.
+            if let Some(filepath) = iter.next() {
+                // check it's a valid filepath
+                    error_location = OutputLocation::File(filepath);
+                
+            }
+        } else if token == "2>>" {
+            if let Some(filepath) = iter.next() {
+                error_location = OutputLocation::AppendToFile(filepath);
+                
+            }
         } else {
             filtered_tokens.push(token);
         }
     }
-    (filtered_tokens, output_location)
+    (filtered_tokens, output_location, error_location)
 }
 
 /* 
