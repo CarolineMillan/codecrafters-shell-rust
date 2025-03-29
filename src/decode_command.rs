@@ -95,7 +95,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                                     .expect("failed to execute file");
                 //let output_str = std::str::from_utf8(&output.stdout)?;
                 //output_string(output_str, &my_command.output_location)?;
-
+                println!("I'm free!!");
                     // Handle standard output:
                 let stdout_str = String::from_utf8_lossy(&output.stdout);
                 let _resout = output_string(&stdout_str, &my_command.output_location);
@@ -199,7 +199,7 @@ pub fn output_error(output: &str, output_location: &OutputLocation) -> Result<()
             let mut file = File::create(file_path)?;
             //println!("{}", output);
             writeln!(file, "{}", output.trim_end())?;
-            println!("I'm free!!");
+            //println!("I'm free!!");
         }
         OutputLocation::AppendToFile(file_path) => {
             let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
