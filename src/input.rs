@@ -159,7 +159,7 @@ fn set_output_locations(tokens: Vec<String>) -> (Vec<String>, OutputLocation, Ou
                     output_location = OutputLocation::File(filepath);
                 
             }
-        } else if token == ">>" {
+        } else if token == ">>" || token == "1>>" {
             if let Some(filepath) = iter.next() {
                 output_location = OutputLocation::AppendToFile(filepath);
                 
