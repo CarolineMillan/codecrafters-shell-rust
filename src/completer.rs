@@ -181,7 +181,11 @@ impl Completer for MyHelper {
     
         if last_prefix.as_deref() == Some(prefix) {
             if *tab_count == 1 {
-                println!("\n{}", matches.join("  ")); // Print all matches with 2 spaces
+                let mut sorted_matches = matches.clone();
+                sorted_matches.sort();
+                println!("\n{}", sorted_matches.join("  "));
+
+                //println!("\n{}", matches.join("  ")); // Print all matches with 2 spaces
                 print!("$ {} ", prefix); // Reprint prompt with the typed prefix
                 std::io::stdout().flush().unwrap();
                 *tab_count = 0; // Reset tab count after printing matches
