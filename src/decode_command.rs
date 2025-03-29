@@ -99,7 +99,7 @@ pub fn decode(my_command: MyCommand) -> Result<(), Box<dyn std::error::Error>> {
                     // Handle standard output:
                 let stdout_str = String::from_utf8_lossy(&output.stdout);
                 
-                let _resout = output_string(&stdout_str, &my_command.output_location);
+                let _resout = output_string(&stdout_str.trim_end(), &my_command.output_location);
                 println!("I'm free!!");
 
                     
