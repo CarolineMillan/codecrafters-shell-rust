@@ -196,8 +196,9 @@ pub fn output_error(output: &str, output_location: &OutputLocation) -> Result<()
         }
         OutputLocation::File(file_path) => {
             let mut file = File::create(file_path)?;
+            println!("{}", output);
             writeln!(file, "{}", output.trim_end())?;
-            //println!("I'm free!!");
+            println!("I'm free!!");
         }
         OutputLocation::AppendToFile(file_path) => {
             let mut file = OpenOptions::new().append(true).create(true).open(file_path)?;
