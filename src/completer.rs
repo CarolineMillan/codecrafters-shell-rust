@@ -248,11 +248,7 @@ impl Completer for MyHelper {
     }
     
 }
-/*
-fn is_executable(path: &Path) -> bool {
-    path.is_file() && path.metadata().map(|m| m.permissions().readonly() == false).unwrap_or(false)
-}
-*/
+
 impl Helper for MyHelper {}
 impl Hinter for MyHelper {
     type Hint = String;
