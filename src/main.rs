@@ -9,10 +9,9 @@ use completer::MyHelper;
 use input::{MyCommand, CMDS};
 
 use crate::decode_command::decode;
-use crate::completer::MyCompleter;
 //use std::io::{self, Write};
 use rustyline::Editor;
-use rustyline::history::{DefaultHistory, FileHistory};
+use rustyline::history::FileHistory;
 
 
 fn main() {

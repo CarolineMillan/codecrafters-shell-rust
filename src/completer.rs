@@ -2,7 +2,7 @@ use rustyline::completion::{Candidate, Completer, Pair};
 use rustyline::error::ReadlineError;
 //use rustyline::error::ReadlineError;
 use rustyline::highlight::{CmdKind, Highlighter};
-use rustyline::hint::{Hinter, HistoryHinter};
+use rustyline::hint::Hinter;
 use rustyline::validate::{Validator, ValidationContext, ValidationResult};
 use rustyline::{Helper, Context, Result as RLResult};
 use std::borrow::Cow;
@@ -13,36 +13,9 @@ use std::path::Path;
 
 // Our custom completer
 pub struct MyCompleter {
-    last_prefix: Option<String>,
-    tab_count: usize,
 }
 
 impl MyCompleter {
-    pub fn new() -> Self {
-        MyCompleter {
-            last_prefix: None,
-            tab_count: 0,
-        }
-    }
-
-    fn find_executables(prefix: &str) -> Vec<String> {
-        let mut matches = Vec::new();
-        if let Some(paths) = env::var_os("PATH") {
-            for dir in env::split_paths(&paths) {
-                if let Ok(entries) = fs::read_dir(dir) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if let Some(file_name) = path.file_name().and_then(|s| s.to_str()) {
-                            if file_name.starts_with(prefix) && is_executable(&path) {
-                                matches.push(file_name.to_string());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        matches
-    }
 }
 
 fn is_executable(path: &Path) -> bool {

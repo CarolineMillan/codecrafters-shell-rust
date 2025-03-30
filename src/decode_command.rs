@@ -164,7 +164,7 @@ fn change_directory(dir: &str, error_location: &OutputLocation) {
         }
     }
 }
-
+/*
 pub fn remove_surrounding_quotes(argument: &str) -> String {
     argument.trim_matches(|c| c == '"' || c == '\'').to_string()
 }
@@ -174,7 +174,7 @@ pub fn is_surrounded_by_quotes(argument: &str) -> bool {
         || matches!(argument.chars().next(), Some('\"'))
             && matches!(argument.chars().last(), Some('\"'))
 }
-
+*/
 
 pub fn output_string(output: &str, output_location: &OutputLocation) -> Result<(), Box<dyn std::error::Error>> {
     

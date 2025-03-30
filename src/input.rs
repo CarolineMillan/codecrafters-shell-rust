@@ -17,6 +17,7 @@ pub enum OutputLocation {
 }
 
 impl OutputLocation {
+    /*
     pub fn get_filepath(&self) -> Option<&str> {
         match self {
             OutputLocation::File(ref filepath) => Some(filepath.as_str()),
@@ -24,6 +25,7 @@ impl OutputLocation {
             _ => None,
         }
     }
+    */
 }
 
 
