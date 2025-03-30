@@ -209,7 +209,7 @@ impl Completer for MyHelper {
         // If the LCP is longer than what the user has typed, then complete to that.
         if lcp.len() > prefix.len() {
             // If the LCP exactly matches one candidate, we can add a trailing space.
-            let replacement = if candidates.len() == 1 || lcp == candidates[0] {
+            let replacement = if candidates.len() == 1 { //|| lcp == candidates[0] {
                 format!("{} ", lcp)
             } else {
                 lcp.clone()
