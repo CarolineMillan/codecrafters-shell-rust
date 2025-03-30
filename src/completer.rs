@@ -175,6 +175,7 @@ impl Completer for MyHelper {
                 replacement: matches[0].clone() + " ", // Add space after completion
             }]));
         }
+        //chnage
     
         // Mutate state via RefCell
         let mut last_prefix = self.last_prefix.borrow_mut();
